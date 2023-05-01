@@ -1,0 +1,155 @@
+Index: core/src/main/assets/messages/actors/actors.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/actors/actors.properties b/core/src/main/assets/messages/actors/actors.properties
+--- a/core/src/main/assets/messages/actors/actors.properties	(revision 7819c2cb6d4258adb9c487d3e2bc2f58bf866269)
++++ b/core/src/main/assets/messages/actors/actors.properties	(revision 41d3f1e7e575db246427063ce469c7aa8c14ddfc)
+@@ -1227,3 +1227,4 @@
+ actors.char.defeat=you defeated %s.
+ actors.char.def_verb=dodged
+ actors.char.invulnerable=invulnerable
++
+Index: core/src/main/assets/messages/items/items.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/items/items.properties b/core/src/main/assets/messages/items/items.properties
+--- a/core/src/main/assets/messages/items/items.properties	(revision 7819c2cb6d4258adb9c487d3e2bc2f58bf866269)
++++ b/core/src/main/assets/messages/items/items.properties	(revision 41d3f1e7e575db246427063ce469c7aa8c14ddfc)
+@@ -1862,6 +1862,7 @@
+ items.tengusmask.name=Tengu's mask
+ items.tengusmask.ac_wear=WEAR
+ items.tengusmask.used=The mask disintegrates as its power flows into you!
++items.tengusmask.orbsummon=Per lucem, ut summoniam te, aether iudicium! Auxilio me!
+ items.tengusmask.desc=This mask fell off Tengu's face as he died, you can feel great magical power emanating from it. Was the mask Tengu's source of strength?\n\nWhen worn, the tremendous power of the mask will be transferred into you, enabling you to _choose a subclass for your hero._\n\nWhich subclass will you choose?
+ 
+ items.torch.name=torch
+Index: core/src/main/assets/messages/windows/windows.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/windows/windows.properties b/core/src/main/assets/messages/windows/windows.properties
+--- a/core/src/main/assets/messages/windows/windows.properties	(revision 7819c2cb6d4258adb9c487d3e2bc2f58bf866269)
++++ b/core/src/main/assets/messages/windows/windows.properties	(revision 41d3f1e7e575db246427063ce469c7aa8c14ddfc)
+@@ -16,6 +16,7 @@
+ windows.wndchoosesubclass.are_you_sure=Are you sure you want to choose this subclass?
+ windows.wndchoosesubclass.yes=Yes, I've made my choice.
+ windows.wndchoosesubclass.no=No, I'll decide later.
++windows.wndchoosesubclass=
+ 
+ windows.wndclass.mastery=Mastery
+ 
+@@ -297,5 +298,9 @@
+ windows.wndwandmaker.berry=Oh, I see you have the berry! I do hope the rotberry plant didn't trouble you too much. As I promised, you can choose one of my high quality wands.
+ windows.wndwandmaker.farewell=Good luck in your quest, %s!
+ 
+-windows.wndorbsmanage.orb1=Orb 1
+-windows.wndorbsmanage.move=Move
+\ No newline at end of file
++windows.wndorbsmanage.orb1=Equip wand
++windows.wndorbsmanage.move=Move
++
++windows.wndorboutfit.title=Choose a wand
++windows.wndorboutfit.desc=test
++
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/TengusMask.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/TengusMask.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/TengusMask.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/TengusMask.java	(revision 7819c2cb6d4258adb9c487d3e2bc2f58bf866269)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/TengusMask.java	(revision 41d3f1e7e575db246427063ce469c7aa8c14ddfc)
+@@ -23,6 +23,7 @@
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.Assets;
+ import com.shatteredpixel.shatteredpixeldungeon.Badges;
++import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+@@ -104,7 +105,10 @@
+ 		Emitter e = curUser.sprite.centerEmitter();
+ 		e.pos(e.x-2, e.y-6, 4, 4);
+ 		e.start(Speck.factory(Speck.MASK), 0.05f, 20);
+-		GLog.p( Messages.get(this, "used"));
++		if (Dungeon.hero.subClass == HeroSubClass.LIGHTBENDER){
++			GLog.p( Messages.get(this, "orbsummon"));
++		}
++		else GLog.p( Messages.get(this, "used"));
+ 		
+ 	}
+ }
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java	(revision 7819c2cb6d4258adb9c487d3e2bc2f58bf866269)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java	(revision 41d3f1e7e575db246427063ce469c7aa8c14ddfc)
+@@ -1,11 +1,15 @@
+ package com.shatteredpixel.shatteredpixeldungeon.windows;
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
++import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+ import com.watabou.noosa.Game;
++import com.watabou.noosa.Image;
+ import com.watabou.utils.Callback;
+ 
+ public class WndOrbOutfit extends Window {
+@@ -23,8 +27,21 @@
+ 
+     public WndOrbOutfit() {
+ 
++
+         super();
+ 
++        IconTitle titlebar = new IconTitle();
++        titlebar.icon( new ItemSprite(ItemSpriteSheet.MAGES_STAFF));
++        titlebar.label( Messages.get(this, "title") );
++        titlebar.setRect( 0, 0, WIDTH, 0 );
++        add( titlebar );
++
++        RenderedTextBlock message =
++                PixelScene.renderTextBlock(Messages.get(this, "desc"), 6);
++        message.maxWidth( WIDTH );
++        message.setPos(0, titlebar.bottom() + GAP);
++        add( message );
++
+         btnWand = new WndBlacksmith.ItemButton(){
+             @Override
+             protected void onClick(){
+@@ -32,10 +49,10 @@
+             }
+             };
+ 
+-        btnWand.setRect( 75 - BTN_SIZE, GAP, BTN_SIZE, BTN_SIZE );
++        btnWand.setRect( 75, message.top() + message.height() , BTN_SIZE, BTN_SIZE );
+         add( btnWand );
+         btnWand.item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
+-        resize(WIDTH, (int)(btnWand.bottom() + GAP));
++        resize(WIDTH, 90);
+         };
+ 
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java	(revision 7819c2cb6d4258adb9c487d3e2bc2f58bf866269)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java	(revision 41d3f1e7e575db246427063ce469c7aa8c14ddfc)
+@@ -2,6 +2,7 @@
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroAction;
++import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;

@@ -1,0 +1,49 @@
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java	(revision a1079c7880d134225f0c0eef08db2e6434e7f291)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java	(revision 73fe64cd4ae45638866299ef38be7af012147d57)
+@@ -297,5 +297,6 @@
+ 		public static final String SPIRIT_HAWK= "sprites/spirit_hawk.png";
+ 		public static final String RED_SENTRY= "sprites/red_sentry.png";
+ 		public static final String LIGHT_ORB= "sprites/light_orb.png";
++		public static final String LIGHT_ORB2= "sprites/light_orb.png";
+ 	}
+ }
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java	(revision a1079c7880d134225f0c0eef08db2e6434e7f291)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java	(revision 73fe64cd4ae45638866299ef38be7af012147d57)
+@@ -2,6 +2,7 @@
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.Assets;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.LightOrb;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.LightOrb2;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
+@@ -15,7 +16,7 @@
+     public LightOrbSprite2() {
+         super();
+ 
+-        texture( Assets.Sprites.LIGHT_ORB );
++        texture( Assets.Sprites.LIGHT_ORB2 );
+ 
+         TextureFilm frames = new TextureFilm( texture, 14, 15 );
+ 
+@@ -63,7 +64,7 @@
+                 new Callback() {
+                     @Override
+                     public void call() {
+-                        ((LightOrb)ch).onZapComplete();
++                        ((LightOrb2)ch).onZapComplete();
+                     }
+                 } );
+         Sample.INSTANCE.play( Assets.Sounds.ZAP );

@@ -1,0 +1,75 @@
+Index: core/src/main/assets/messages/actors/actors.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/actors/actors.properties b/core/src/main/assets/messages/actors/actors.properties
+--- a/core/src/main/assets/messages/actors/actors.properties	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
++++ b/core/src/main/assets/messages/actors/actors.properties	(revision 0fc728c21f154fca379b0deb5aa84b3e0fd4ec5d)
+@@ -1230,6 +1230,7 @@
+ 
+ actors.mobs.lightorb$wndorbsmanage.orb1=Equip wand
+ actors.mobs.lightorb$wndorbsmanage.move=Move
++actors.mobs.lightorb$wndorbsmanage.direct=Direct
+ actors.mobs.lightorb$wndorboutfit.desc=O caelesti sphaerae, quod artificium hoc accipere opus tuum permanere subsignata in auxilio opus nefaria.
+ actors.mobs.lightorb$wndorboutfit.title=Choose a wand
+ actors.mobs.lightorb$wndorboutfit.wandprompt=Choose a wand
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 0fc728c21f154fca379b0deb5aa84b3e0fd4ec5d)
+@@ -90,6 +90,7 @@
+ 
+         @Override
+         public boolean interact(Char c) {
++                orbID = orb.id();
+                 if (c != Dungeon.hero) {
+                         return true;
+                 }
+@@ -222,7 +223,7 @@
+                 }
+         }
+ 
+-        public static class WndOrbsManage extends Window {
++        public class WndOrbsManage extends Window {
+ 
+                 private static final int WIDTH      = 120;
+                 private static final int BTN_HEIGHT = 20;
+@@ -250,12 +251,32 @@
+                                 }
+                         };
+ 
++//                        RedButton direct = new RedButton( Messages.get(this, "direct") ) {
++//                                @Override
++//                                protected void onClick() {
++//                                        if (orb == null && orbID != 0){
++//                                                Actor a = Actor.findById(orbID);
++//                                                if (a != null){
++//                                                        orb = (LightOrb)a;
++//                                                } else {
++//                                                        orbID = 0;
++//                                                }
++//                                        }
++//                                        if (orb != null) GameScene.selectCell(ghostDirector);
++
++//                                }
++
++
++//                        };
++
+                         btnorb1.setRect( 0, GAP - 2 , WIDTH, BTN_HEIGHT );
+                         move.setRect( 0, (int)btnorb1.bottom() + GAP, WIDTH, BTN_HEIGHT );
++//                        direct.setRect( 0, (int)move.bottom() + GAP, WIDTH, BTN_HEIGHT );
+                         add( btnorb1 );
+                         add( move );
++//                        add( direct );
+ 
+-                        resize( WIDTH, 42 );
++                        resize( WIDTH, 64 );
+                 }
+ 
+         }

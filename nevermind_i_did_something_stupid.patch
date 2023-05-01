@@ -1,0 +1,326 @@
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision 22153c569d635386d1b71c44c7f564754e9b3eb6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
+@@ -49,10 +49,13 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+ import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+ import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
++import com.shatteredpixel.shatteredpixeldungeon.items.food.MeatPie;
+ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
+ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
+ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
++import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfAccuracy;
++import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
+@@ -60,6 +63,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
+@@ -67,8 +71,10 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Shortsword;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WornShortsword;
++import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Shuriken;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingStone;
++import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Tomahawk;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.watabou.utils.DeviceCompat;
+ 
+@@ -93,32 +99,82 @@
+ 		Item i = new ClothArmor().identify();
+ 		if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor)i;
+ 
+-		i = new Food();
++		i = new RingOfSharpshooting().identify();
++		if (!Challenges.isItemBlocked(i)) hero.belongings.ring = (RingOfSharpshooting)i;
++
++		i = new MeatPie();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new MeatPie();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new MeatPie();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+ 
+-		//cheats for debug
+-
+-		i = new TengusMask();
++		i = new Shuriken();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new TengusMask();
++		i = new Shuriken();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new Shortsword();
++		i = new Tomahawk();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new ScrollOfIdentify();
++		i = new Tomahawk();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new ScrollOfIdentify();
++		i = new Tomahawk();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new WandOfFireblast();
++		i = new Tomahawk();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new MagicalHolster();
++		i = new Tomahawk();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new WandOfBlastWave();
++		i = new ScrollOfUpgrade();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new DriedRose();
++		i = new ScrollOfUpgrade();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new DriedRose();
++		i = new ScrollOfUpgrade();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+ 
++		//cheats for debug
++
++		//i = new TengusMask();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new TengusMask();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new Shortsword();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new ScrollOfIdentify();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++
++
++		//i = new WandOfFireblast();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new MagicalHolster();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new WandOfFrost();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new WandOfMagicMissile();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new DriedRose();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++		//i = new DriedRose();
++		//if (!Challenges.isItemBlocked(i)) i.collect();
++
+ 		new VelvetPouch().collect();
+ 		Dungeon.LimitedDrops.VELVET_POUCH.drop();
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 22153c569d635386d1b71c44c7f564754e9b3eb6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
+@@ -99,16 +99,16 @@
+         @Override
+         public boolean interact(Char c) {
+                 Game.runOnRenderThread(new Callback() {
+-                        @Override
+-                        public void call() {
+-                                menu();
+-                        }
+-                }
++                                               @Override
++                                               public void call() {
++                                                       menu();
++                                               }
++                                       }
+                 );
+                 return true;
+         }
+ 
+-                @Override
++        @Override
+         protected boolean canAttack( Char enemy ) {
+                 return new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
+         }
+@@ -178,8 +178,8 @@
+                                 orbID = 0;
+                         }
+                 }
+-                        return ((orb.HP*100) / orb.HT) + "%";
+-                }
++                return ((orb.HP*100) / orb.HT) + "%";
++        }
+ 
+ 
+         private static final String ORBID =       "orbID";
+@@ -320,7 +320,7 @@
+                                         if (orb.wand != null) {
+                                                 item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
+                                                 if (!orb.wand.doPickUp(Dungeon.hero)){
+-                                                Dungeon.level.drop( orb.wand, Dungeon.hero.pos);
++                                                        Dungeon.level.drop( orb.wand, Dungeon.hero.pos);
+                                                 }}
+ 
+                                         else {
+@@ -385,4 +385,3 @@
+ 
+ 
+ }
+-
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java	(revision 22153c569d635386d1b71c44c7f564754e9b3eb6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
+@@ -307,12 +307,12 @@
+                         btnWand = new WndBlacksmith.ItemButton(){
+                                 @Override
+                                 protected void onClick(){
+-                                        if
+-                                        (orb2.wand != null) {
+-                                                item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
+-                                                if (!orb2.wand.doPickUp(Dungeon.hero)){
+-                                                Dungeon.level.drop( orb2.wand, Dungeon.hero.pos);
+-                                                }}
++                                        if (orb2.wand != null) {
++                                                item(new WndBag.Placeholder(ItemSpriteSheet.ARMOR_HOLDER));
++                                                if (!LightOrb2.wand.doPickUp(Dungeon.hero)){
++                                                        Dungeon.level.drop( LightOrb2.wand, Dungeon.hero.pos);
++                                                }
++                                                LightOrb2.wand = null;}
+ 
+                                         else {
+                                                 GameScene.selectItem(new WndBag.ItemSelector() {
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/WandOfFrost.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/WandOfFrost.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/WandOfFrost.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/WandOfFrost.java	(revision 22153c569d635386d1b71c44c7f564754e9b3eb6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/WandOfFrost.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
+@@ -148,6 +148,8 @@
+ 		}
+ 	}
+ 
++
++
+ 	@Override
+ 	public void staffFx(MagesStaff.StaffParticle particle) {
+ 		particle.color(0x88CCFF);
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java	(revision 22153c569d635386d1b71c44c7f564754e9b3eb6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
+@@ -5,6 +5,9 @@
+ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
+ import com.watabou.glwrap.Blending;
+ import com.watabou.noosa.TextureFilm;
+ import com.watabou.noosa.audio.Sample;
+@@ -48,25 +51,57 @@
+         emitter().start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
+     }
+ 
++
++
+     @Override
+     public int blood() {
+         return 0xFFFFFF;
+     }
+     public void zap( int cell ) {
+ 
+-        super.zap( cell );
+-
+-        MagicMissile.boltFromChar( parent,
+-                MagicMissile.BEACON,
+-                this,
+-                cell,
+-                new Callback() {
+-                    @Override
+-                    public void call() {
+-                        ((LightOrb)ch).onZapComplete();
+-                    }
+-                } );
+-        Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        if (LightOrb.wand instanceof WandOfMagicMissile){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.MAGIC_MISSILE,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfFrost){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.FROST,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        else {
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.RAINBOW,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++
+     }
+ }
+ 

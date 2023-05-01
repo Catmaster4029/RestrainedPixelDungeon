@@ -1,0 +1,286 @@
+Index: core/src/main/assets/messages/actors/actors.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/actors/actors.properties b/core/src/main/assets/messages/actors/actors.properties
+--- a/core/src/main/assets/messages/actors/actors.properties	(revision 864dcce85d81b467795f36743bcc6c70bca3c885)
++++ b/core/src/main/assets/messages/actors/actors.properties	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
+@@ -1231,4 +1231,8 @@
+ actors.mobs.lightorb$wndorbsmanage.orb1=Equip wand
+ actors.mobs.lightorb$wndorbsmanage.move=Move
+ actors.mobs.lightorb$wndorboutfit.desc=O caelesti sphaerae, quod artificium hoc accipere opus tuum permanere subsignata in auxilio opus nefaria.
+-actors.mobs.lightorb$wndorboutfit.title=Choose a wand
+\ No newline at end of file
++actors.mobs.lightorb$wndorboutfit.title=Choose a wand
++actors.mobs.lightorb$wndorboutfit.wandprompt=Choose a wand
++actors.mobs.lightorb$wndorboutfit.cant_unique=Don't give the orb your personal staff!
++actors.mobs.lightorb$wndorboutfit.cant_unidentified=The orb flashes with light, rejecting the wand: it needs to know what it's working with!
++actors.mobs.lightorb$wndorboutfit.cant_cursed=The orb flashes with light, rejecting the wand: the dark magic emanating from the wand disgusts it. 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision 864dcce85d81b467795f36743bcc6c70bca3c885)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
+@@ -45,6 +45,8 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
+ import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
++import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
++import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+ import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
+ import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
+ import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
+@@ -56,6 +58,8 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
+@@ -102,6 +106,18 @@
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+ 		i = new ScrollOfIdentify();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new ScrollOfIdentify();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new WandOfFireblast();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new MagicalHolster();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new WandOfBlastWave();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new DriedRose();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new DriedRose();
++		if (!Challenges.isItemBlocked(i)) i.collect();
+ 
+ 		new VelvetPouch().collect();
+ 		Dungeon.LimitedDrops.VELVET_POUCH.drop();
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java	(revision 864dcce85d81b467795f36743bcc6c70bca3c885)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
+@@ -60,7 +60,6 @@
+ 	}
+ 
+ 	public String desc() {
+-		//Include the staff effect description in the battlemage's desc if possible
+ 		if (this == BATTLEMAGE){
+ 			String desc = Messages.get(this, name() + "_desc");
+ 			if (Game.scene() instanceof GameScene){
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 864dcce85d81b467795f36743bcc6c70bca3c885)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
+@@ -2,6 +2,7 @@
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.Badges;
+ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
++import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
+@@ -12,8 +13,10 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
++import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
+ import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
++import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+@@ -35,6 +38,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBlacksmith;
+ import com.watabou.noosa.Game;
+ import com.watabou.noosa.tweeners.AlphaTweener;
++import com.watabou.utils.Bundle;
+ import com.watabou.utils.Callback;
+ import com.watabou.utils.PathFinder;
+ import com.watabou.utils.Random;
+@@ -42,8 +46,8 @@
+ public class LightOrb extends Mob {
+ 
+         private static final float TIME_TO_ZAP	= 1f;
+-
+-        private Wand wand = null;
++        private LightOrb orb = null;
++        private static Wand wand = null;
+         private int orbID = 0;
+ 
+         {
+@@ -156,6 +160,45 @@
+         }
+ 
+ 
++        public String status() {
++                if (orb == null && orbID != 0){
++                        try {
++                                Actor a = Actor.findById(orbID);
++                                if (a != null) {
++                                        orb = (LightOrb) a;
++                                } else {
++                                        orbID = 0;
++                                }
++                        } catch ( ClassCastException e ){
++                                ShatteredPixelDungeon.reportException(e);
++                                orbID = 0;
++                        }
++                }
++                        return ((orb.HP*100) / orb.HT) + "%";
++                }
++
++
++        private static final String ORBID =       "orbID";
++        private static final String WAND =         "wand";
++
++        @Override
++        public void storeInBundle( Bundle bundle ) {
++                super.storeInBundle(bundle);
++
++                bundle.put( ORBID, orbID );
++
++                if (wand != null) bundle.put( WAND, wand );
++        }
++
++        @Override
++        public void restoreFromBundle( Bundle bundle ) {
++                super.restoreFromBundle(bundle);
++
++                orbID = bundle.getInt( ORBID );
++                if (bundle.contains(WAND)) wand = (Wand) bundle.get( WAND );
++        }
++
++
+ 
+         public static void spawnNext( int pos ) {
+                 for (int n : PathFinder.NEIGHBOURS2) {
+@@ -251,30 +294,33 @@
+                                 @Override
+                                 protected void onClick(){
+                                         if (orb.wand != null)
+-                                                item(new WndBag.Placeholder(ItemSpriteSheet.WEAPON_HOLDER));
++                                                item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
++                                                if (!orb.wand.doPickUp(Dungeon.hero)){
++                                                Dungeon.level.drop( orb.wand, Dungeon.hero.pos);
++                                                }
+ 
+                                         else {
+                                                 GameScene.selectItem(new WndBag.ItemSelector() {
+ 
+                                                         @Override
+                                                         public String textPrompt() {
+-                                                                return Messages.get(LightOrb.WndOrbOutfit.class, "weapon_prompt");
++                                                                return Messages.get(LightOrb.WndOrbOutfit.class, "wandprompt");
+                                                         }
+ 
+                                                         @Override
+                                                         public Class<?extends Bag> preferredBag(){
+-                                                                return Belongings.Backpack.class;
++                                                                return MagicalHolster.class;
+                                                         }
+ 
+                                                         @Override
+                                                         public boolean itemSelectable(Item item) {
+-                                                                return item instanceof MeleeWeapon;
++                                                                return item instanceof Wand;
+                                                         }
+ 
+                                                         @Override
+                                                         public void onSelect(Item item) {
+-                                                                if (!(item instanceof MeleeWeapon)) {
+-                                                                        //do nothing, should only happen when window is cancelled
++                                                                if (!(item instanceof Wand)) {
++
+                                                                 } else if (item.unique) {
+                                                                         GLog.w( Messages.get(LightOrb.WndOrbOutfit.class, "cant_unique"));
+                                                                         hide();
+@@ -285,16 +331,24 @@
+                                                                         GLog.w( Messages.get(LightOrb.WndOrbOutfit.class, "cant_cursed"));
+                                                                         hide();
+                                                                 }
++                                                                else {
++                                                                        item.detach(Dungeon.hero.belongings.backpack);
++                                                                        LightOrb.wand = (Wand) item;
++                                                                        item(LightOrb.wand);
++                                                                }
+ 
+                                                         }
+                                                 });
+                                         }
+                                 }
+                         };
+-
++                        if (LightOrb.wand != null) {
++                                btnWand.item(LightOrb.wand);}
++                        else {
++                                btnWand.item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
++                        }
+                         btnWand.setRect( 45, message.bottom() + 5, BTN_SIZE, BTN_SIZE );
+                         add( btnWand );
+-                        btnWand.item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
+                         resize(WIDTH, 76);
+                 }
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/Artifact.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/Artifact.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/Artifact.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/Artifact.java	(revision 864dcce85d81b467795f36743bcc6c70bca3c885)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/Artifact.java	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
+@@ -58,13 +58,14 @@
+ 	@Override
+ 	public boolean doEquip( final Hero hero ) {
+ 
+-		if ((hero.belongings.artifact != null && hero.belongings.artifact.getClass() == this.getClass())
+-				|| (hero.belongings.misc != null && hero.belongings.misc.getClass() == this.getClass())){
+-
+-			GLog.w( Messages.get(Artifact.class, "cannot_wear_two") );
+-			return false;
+-
+-		} else {
++//		if ((hero.belongings.artifact != null && hero.belongings.artifact.getClass() == this.getClass())
++//				|| (hero.belongings.misc != null && hero.belongings.misc.getClass() == this.getClass())){
++//
++//			GLog.w( Messages.get(Artifact.class, "cannot_wear_two") );
++//			return false;
++//		}
++//		else
++		{
+ 
+ 			if (super.doEquip( hero )){
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/DriedRose.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/DriedRose.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/DriedRose.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/DriedRose.java	(revision 864dcce85d81b467795f36743bcc6c70bca3c885)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/DriedRose.java	(revision 402d1703f47914523e8ef627cc697a9c6cf3cb21)
+@@ -905,7 +905,7 @@
+ 							@Override
+ 							public void onSelect(Item item) {
+ 								if (!(item instanceof MeleeWeapon)) {
+-									//do nothing, should only happen when window is cancelled
++
+ 								} else if (item.unique) {
+ 									GLog.w( Messages.get(WndGhostHero.class, "cant_unique"));
+ 									hide();

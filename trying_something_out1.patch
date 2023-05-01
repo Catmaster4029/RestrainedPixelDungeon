@@ -1,0 +1,45 @@
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java	(revision bdf307713d8c29480d8932709fe5469a89976756)
+@@ -100,6 +100,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Grim;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Kinetic;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments.Shocking;
++import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RunicBlade;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.ShockingDart;
+ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
+@@ -393,6 +394,9 @@
+ 			
+ 			if (this instanceof Hero){
+ 				Hero h = (Hero)this;
++				if (h.belongings.attackingWeapon() instanceof RunicBlade) {
++					dr = 0;
++				}
+ 				if (h.belongings.weapon() instanceof MissileWeapon
+ 						&& h.subClass == HeroSubClass.SNIPER
+ 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/RunicBlade.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/RunicBlade.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/RunicBlade.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/RunicBlade.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/RunicBlade.java	(revision bdf307713d8c29480d8932709fe5469a89976756)
+@@ -32,7 +32,10 @@
+ 		hitSoundPitch = 1f;
+ 
+ 		tier = 4;
++		ACC = 1000f;
+ 	}
++
++
+ 
+ 	//Essentially it's a tier 4 weapon, with tier 3 base max damage, and tier 5 scaling.
+ 	//equal to tier 4 in damage at +5

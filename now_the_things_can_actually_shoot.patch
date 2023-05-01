@@ -1,0 +1,97 @@
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Mob.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Mob.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Mob.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Mob.java	(revision 9c7d29f203c596ee2eb9ea9dcf0559e5a403d4a0)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Mob.java	(revision 0bde7d71f9eccead9492e9ee528ddff8e4ee70e2)
+@@ -1132,7 +1132,6 @@
+ 	public static void holdAllies( Level level, int holdFromPos ){
+ 		heldAllies.clear();
+ 		for (Mob mob : level.mobs.toArray( new Mob[0] )) {
+-			//preserve directable allies no matter where they are
+ 			if (mob instanceof DirectableAlly) {
+ 				((DirectableAlly) mob).clearDefensingPos();
+ 				level.mobs.remove( mob );
+@@ -1141,7 +1140,7 @@
+ 			//preserve intelligent allies if they are near the hero
+ 			} else if (mob.alignment == Alignment.ALLY
+ 					&& mob.intelligentAlly
+-					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5){
++					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 500){
+ 				level.mobs.remove( mob );
+ 				heldAllies.add(mob);
+ 			}
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java	(revision 9c7d29f203c596ee2eb9ea9dcf0559e5a403d4a0)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java	(revision 0bde7d71f9eccead9492e9ee528ddff8e4ee70e2)
+@@ -36,6 +36,7 @@
+                 defenseSkill = 1000;
+ 
+                 alignment = Alignment.ALLY;
++                intelligentAlly = true;
+         }
+ 
+         @Override
+@@ -75,10 +76,6 @@
+                         }
+                 }
+         }
+-
+-        //used so resistances can differentiate between melee and magical attacks
+-        public static class DarkBolt{}
+-
+         protected void zap() {
+                 spend( 1f );
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java	(revision 9c7d29f203c596ee2eb9ea9dcf0559e5a403d4a0)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java	(revision 0bde7d71f9eccead9492e9ee528ddff8e4ee70e2)
+@@ -1,10 +1,15 @@
+ package com.shatteredpixel.shatteredpixeldungeon.sprites;
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.Assets;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.LightOrb;
++import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
+ import com.watabou.glwrap.Blending;
+ import com.watabou.noosa.TextureFilm;
++import com.watabou.noosa.audio.Sample;
++import com.watabou.utils.Callback;
+ 
+ public class LightOrbSprite extends MobSprite {
+ 
+@@ -48,4 +53,21 @@
+     public int blood() {
+         return 0xFFFFFF;
+     }
+-}
+\ No newline at end of file
++    public void zap( int cell ) {
++
++        super.zap( cell );
++
++        MagicMissile.boltFromChar( parent,
++                MagicMissile.BEACON,
++                this,
++                cell,
++                new Callback() {
++                    @Override
++                    public void call() {
++                        ((LightOrb)ch).onZapComplete();
++                    }
++                } );
++        Sample.INSTANCE.play( Assets.Sounds.ZAP );
++    }
++}
++

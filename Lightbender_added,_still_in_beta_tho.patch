@@ -1,0 +1,618 @@
+Index: SPD-classes/src/main/java/com/watabou/utils/PathFinder.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java b/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java
+--- a/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -43,6 +43,7 @@
+ 	public static int[] NEIGHBOURS4;
+ 	public static int[] NEIGHBOURS8;
+ 	public static int[] NEIGHBOURS9;
++	public static int[] NEIGHBOURS2;
+ 
+ 	//similar to their equivalent neighbour arrays, but the order is clockwise.
+ 	//Useful for some logic functions, but is slower due to lack of array-access order.
+@@ -65,6 +66,7 @@
+ 		dirLR = new int[]{-1-width, -1, -1+width, -width, +width, +1-width, +1, +1+width};
+ 
+ 		NEIGHBOURS4 = new int[]{-width, -1, +1, +width};
++		NEIGHBOURS2 = new int[]{ -1, +1};
+ 		NEIGHBOURS8 = new int[]{-width-1, -width, -width+1, -1, +1, +width-1, +width, +width+1};
+ 		NEIGHBOURS9 = new int[]{-width-1, -width, -width+1, -1, 0, +1, +width-1, +width, +width+1};
+ 
+Index: core/src/main/assets/messages/actors/actors.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/actors/actors.properties b/core/src/main/assets/messages/actors/actors.properties
+--- a/core/src/main/assets/messages/actors/actors.properties	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/assets/messages/actors/actors.properties	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -526,6 +526,9 @@
+ actors.hero.herosubclass.warden=warden
+ actors.hero.herosubclass.warden_short_desc=The _Warden_ can see through tall grass and gains bonus effects when she plants seeds and tramples plants.
+ actors.hero.herosubclass.warden_desc=The Warden has a strong connection to nature which grants her a variety of bonus effects relating to grass and plants. She is able to see through tall and furrowed grass as if it were empty space.\n\nThe Warden causes grass to sprout up around any seed she throws or plants, and gains special effects when trampling plants. These special effects replace the regular plant effects, meaning that no plant is harmful for her to step on.
++actors.hero.herosubclass.lightbender=lightbender
++actors.hero.herosubclass.lightbender_desc=The _Lightbender_ is a powerful wizard, which bends the dark forces of the dungeon to its own, channeling that dark magic to summon two orbs of light to come and aid him.\n\nThe orbs can hold a wand, and will shoot when the lightbender uses their staff.\nThe orbs always follow the lightbender, but the mobs will always choose to attack the hero.
++actors.hero.herosubclass.lightbender_short_desc=The _Lightbender_ summons two orbs of light which can hold wands to aid them.
+ 
+ ##talents
+ actors.hero.talent$improvisedprojectilecooldown.name=improvised projectiles cooldown
+Index: core/src/main/assets/messages/items/items.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/items/items.properties b/core/src/main/assets/messages/items/items.properties
+--- a/core/src/main/assets/messages/items/items.properties	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/assets/messages/items/items.properties	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -1540,6 +1540,7 @@
+ 
+ items.weapon.melee.magesstaff.name=mage's staff
+ items.weapon.melee.magesstaff.ac_imbue=IMBUE
++items.weapon.melee.magesstaff.orbs=MANAGE ORBS
+ items.weapon.melee.magesstaff.ac_zap=ZAP
+ items.weapon.melee.magesstaff.prompt=Select a wand
+ items.weapon.melee.magesstaff.imbue=You imbue your staff with the %s.
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -296,5 +296,6 @@
+ 		public static final String NINJA_LOG= "sprites/ninja_log.png";
+ 		public static final String SPIRIT_HAWK= "sprites/spirit_hawk.png";
+ 		public static final String RED_SENTRY= "sprites/red_sentry.png";
++		public static final String LIGHT_ORB= "sprites/light_orb.png";
+ 	}
+ }
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -41,6 +41,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.warrior.Endure;
+ import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
+ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
++import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
+ import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
+ import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
+ import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
+@@ -69,7 +70,7 @@
+ public enum HeroClass {
+ 
+ 	WARRIOR( HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
+-	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
++	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK, HeroSubClass.LIGHTBENDER ),
+ 	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
+ 	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN );
+ 
+@@ -89,6 +90,10 @@
+ 
+ 		i = new Food();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new TengusMask();
++		if (!Challenges.isItemBlocked(i)) i.collect();
++		i = new TengusMask();
++		if (!Challenges.isItemBlocked(i)) i.collect();
+ 
+ 		new VelvetPouch().collect();
+ 		Dungeon.LimitedDrops.VELVET_POUCH.drop();
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroSubClass.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -37,6 +37,7 @@
+ 
+ 	BATTLEMAGE(HeroIcon.BATTLEMAGE),
+ 	WARLOCK(HeroIcon.WARLOCK),
++	LIGHTBENDER(HeroIcon.LIGHTBENDER),
+ 	
+ 	ASSASSIN(HeroIcon.ASSASSIN),
+ 	FREERUNNER(HeroIcon.FREERUNNER),
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Talent.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Talent.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Talent.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Talent.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Talent.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -103,6 +103,9 @@
+ 	EMPOWERED_STRIKE(43, 3), MYSTICAL_CHARGE(44, 3), EXCESS_CHARGE(45, 3),
+ 	//Warlock T3
+ 	SOUL_EATER(46, 3), SOUL_SIPHON(47, 3), NECROMANCERS_MINIONS(48, 3),
++	//Lightbender T3
++
++
+ 	//Elemental Blast T4
+ 	BLAST_RADIUS(49, 4), ELEMENTAL_POWER(50, 4), REACTIVE_BARRIER(51, 4),
+ 	//Wild Magic T4
+@@ -655,6 +658,10 @@
+ 			case WARDEN:
+ 				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
+ 				break;
++			case LIGHTBENDER:
++				Collections.addAll(tierTalents, EMPOWERED_STRIKE, MYSTICAL_CHARGE, EXCESS_CHARGE);
++				break;
++
+ 		}
+ 		for (Talent talent : tierTalents){
+ 			talents.get(2).put(talent, 0);
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+new file mode 100644
+--- /dev/null	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -0,0 +1,78 @@
++package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
++
++import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
++import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
++import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
++import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
++import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
++import com.shatteredpixel.shatteredpixeldungeon.items.journal.Guidebook;
++import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
++import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.LightOrbSprite;
++import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
++import com.watabou.noosa.tweeners.AlphaTweener;
++import com.watabou.utils.PathFinder;
++import com.watabou.utils.Random;
++
++public class LightOrb extends Mob {
++
++        {
++                spriteClass = LightOrbSprite.class;
++
++                HP = HT = 4;
++                defenseSkill = 25;
++
++                EXP = 2;
++                maxLvl = 7;
++
++                loot = Generator.Category.SEED;
++                lootChance = 0.25f;
++        }
++
++        @Override
++        public int damageRoll() {
++                return Random.NormalIntRange( 1, 4 );
++        }
++
++        @Override
++        public int attackSkill( Char target ) {
++                return 10;
++        }
++
++        private static int dodges = 0;
++
++        @Override
++        public String defenseVerb() {
++                dodges++;
++                if (dodges >= 2 && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_SURPRISE_ATKS)){
++                        GLog.p(Messages.get(Guidebook.class, "hint"));
++                        GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_SURPRISE_ATKS);
++                        dodges = 0;
++                }
++                return super.defenseVerb();
++        }
++        public static void spawnNext( int pos ) {
++                for (int n : PathFinder.NEIGHBOURS2) {
++                        spawnAtOrb(pos + n);
++                }
++        }
++        public static LightOrb spawnAtOrb(int pos ) {
++                if ((!Dungeon.level.solid[pos] || Dungeon.level.passable[pos]) && Actor.findChar( pos ) == null) {
++
++                        LightOrb w = new LightOrb();
++                        w.pos = pos;
++                        Dungeon.level.occupyCell(w);
++                        GameScene.add( w );
++                        w.sprite.alpha( 0 );
++                        w.sprite.parent.add( new AlphaTweener( w.sprite, 1, 0.5f ) );
++
++                        w.sprite.emitter().burst( ShadowParticle.CURSE, 5 );
++                        return w;
++                } else {
++                        return null;
++                }
++        }
++}
++
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -28,6 +28,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
++import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+@@ -49,16 +50,19 @@
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
++import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+ import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+ import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
++import com.shatteredpixel.shatteredpixeldungeon.windows.WndOrbsManage;
+ import com.watabou.noosa.audio.Sample;
+ import com.watabou.noosa.particles.Emitter;
+ import com.watabou.noosa.particles.PixelParticle;
+ import com.watabou.utils.Bundle;
+ import com.watabou.utils.Random;
+ 
++
+ import java.util.ArrayList;
+ 
+ public class MagesStaff extends MeleeWeapon {
+@@ -67,6 +71,8 @@
+ 
+ 	public static final String AC_IMBUE = "IMBUE";
+ 	public static final String AC_ZAP	= "ZAP";
++	public static final String ORBS	= "MANAGE ORBS";
++
+ 
+ 	private static final float STAFF_SCALE_FACTOR = 0.75f;
+ 
+@@ -110,6 +116,9 @@
+ 		if (wand!= null && wand.curCharges > 0) {
+ 			actions.add( AC_ZAP );
+ 		}
++		if (Dungeon.hero.subClass == HeroSubClass.LIGHTBENDER){
++			actions.add(ORBS);
++		}
+ 		return actions;
+ 	}
+ 
+@@ -124,7 +133,6 @@
+ 		super.execute(hero, action);
+ 
+ 		if (action.equals(AC_IMBUE)) {
+-
+ 			curUser = hero;
+ 			GameScene.selectItem(itemSelector);
+ 
+@@ -138,6 +146,9 @@
+ 			if (cursed || hasCurseEnchant()) wand.cursed = true;
+ 			else                             wand.cursed = false;
+ 			wand.execute(hero, AC_ZAP);
++		} else if (action.equals(ORBS)) {
++			GameScene.show(new WndOrbsManage());
++			return;
+ 		}
+ 	}
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+new file mode 100644
+--- /dev/null	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -0,0 +1,51 @@
++package com.shatteredpixel.shatteredpixeldungeon.sprites;
++
++import com.shatteredpixel.shatteredpixeldungeon.Assets;
++import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
++import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
++import com.watabou.glwrap.Blending;
++import com.watabou.noosa.TextureFilm;
++
++public class LightOrbSprite extends MobSprite {
++
++    public LightOrbSprite() {
++        super();
++
++        texture( Assets.Sprites.LIGHT_ORB );
++
++        TextureFilm frames = new TextureFilm( texture, 14, 15 );
++
++        idle = new Animation( 5, true );
++        idle.frames( frames, 0, 1 );
++
++        run = new Animation( 10, true );
++        run.frames( frames, 0, 1 );
++
++        attack = new Animation( 10, false );
++        attack.frames( frames, 0, 2, 3 );
++
++        die = new Animation( 8, false );
++        die.frames( frames, 0, 4, 5, 6, 7 );
++
++        play( idle );
++    }
++
++    @Override
++    public void draw() {
++        Blending.setLightMode();
++        super.draw();
++        Blending.setNormalMode();
++    }
++
++    @Override
++    public void die() {
++        super.die();
++        emitter().start( ShaftParticle.FACTORY, 0.3f, 4 );
++        emitter().start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
++    }
++
++    @Override
++    public int blood() {
++        return 0xFFFFFF;
++    }
++}
+\ No newline at end of file
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/HeroIcon.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/HeroIcon.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/HeroIcon.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/HeroIcon.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/HeroIcon.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -45,6 +45,7 @@
+ 	public static final int FREERUNNER  = 5;
+ 	public static final int SNIPER      = 6;
+ 	public static final int WARDEN      = 7;
++	public static final int LIGHTBENDER = 21;
+ 
+ 	//abilities
+ 	public static final int HEROIC_LEAP     = 8;
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java	(revision a96d62f6bfb1ef79b0ee93f2f0632beb6bad8ef8)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -21,9 +21,18 @@
+ 
+ package com.shatteredpixel.shatteredpixeldungeon.windows;
+ 
++import com.shatteredpixel.shatteredpixeldungeon.Assets;
+ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PrismaticGuard;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.LightOrb;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
++import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+ import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+@@ -35,6 +44,8 @@
+ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
++import com.watabou.noosa.audio.Sample;
++import com.watabou.utils.PathFinder;
+ 
+ public class WndChooseSubclass extends Window {
+ 	
+@@ -67,12 +78,16 @@
+ 							Messages.get(WndChooseSubclass.this, "are_you_sure"),
+ 							Messages.get(WndChooseSubclass.this, "yes"),
+ 							Messages.get(WndChooseSubclass.this, "no")){
++
+ 						@Override
+ 						protected void onSelect(int index) {
+ 							hide();
+ 							if (index == 0 && WndChooseSubclass.this.parent != null){
+ 								WndChooseSubclass.this.hide();
+ 								tome.choose( subCls );
++								if (Dungeon.hero.subClass == HeroSubClass.LIGHTBENDER){
++									LightOrb.spawnNext( hero.pos );
++								}
+ 							}
+ 						}
+ 					});
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+new file mode 100644
+--- /dev/null	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java	(revision d514ddcb73ef831a96933c986a3c1f1f443d28df)
+@@ -0,0 +1,138 @@
++package com.shatteredpixel.shatteredpixeldungeon.windows;
++
++import com.shatteredpixel.shatteredpixeldungeon.Assets;
++import com.shatteredpixel.shatteredpixeldungeon.Chrome;
++import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
++import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
++import com.shatteredpixel.shatteredpixeldungeon.items.Item;
++import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
++import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
++import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
++import com.shatteredpixel.shatteredpixeldungeon.ui.ItemSlot;
++import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
++import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
++import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
++import com.watabou.noosa.NinePatch;
++import com.watabou.noosa.audio.Sample;
++import com.watabou.noosa.ui.Component;
++
++
++public class WndOrbsManage extends Window {
++
++    private static final int BTN_SIZE	= 36;
++    private static final int WIDTH		= 116;
++
++    private ItemButton btnPressed;
++    private ItemButton btnItem1;
++
++    public WndOrbsManage( Blacksmith troll, Hero hero ) {
++
++        super();
++
++        IconTitle titlebar = new IconTitle();
++        titlebar.icon( troll.sprite() );
++        titlebar.label( Messages.titleCase( troll.name() ) );
++        titlebar.setRect( 0, 0, WIDTH, 0 );
++        add( titlebar );
++
++        RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt"), 6 );
++        message.maxWidth( WIDTH);
++        message.setPos(0, titlebar.bottom() );
++        add( message );
++
++        btnItem1 = new ItemButton() {
++            @Override
++            protected void onClick() {
++                btnPressed = btnItem1;
++                GameScene.selectItem( itemSelector );
++            }
++        };
++        btnItem1.setRect( (WIDTH ) / 2 - BTN_SIZE, message.top() + message.height() , BTN_SIZE, BTN_SIZE );
++        add( btnItem1 );
++    }
++
++    protected WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
++
++        @Override
++        public String textPrompt() {
++            return Messages.get(WndBlacksmith.class, "select");
++        }
++
++        @Override
++        public Class<?extends Bag> preferredBag(){
++            return Belongings.Backpack.class;
++        }
++
++        @Override
++        public boolean itemSelectable(Item item) {
++            return item.isUpgradable();
++        }
++
++        @Override
++        public void onSelect(Item item) {
++
++        }
++
++    };
++
++    public WndOrbsManage() {
++
++    }
++
++    public static class ItemButton extends Component {
++
++        protected NinePatch bg;
++        protected ItemSlot slot;
++
++        public Item item = null;
++
++        @Override
++        protected void createChildren() {
++            super.createChildren();
++
++            bg = Chrome.get( Chrome.Type.RED_BUTTON);
++            add( bg );
++
++            slot = new ItemSlot() {
++                @Override
++                protected void onPointerDown() {
++                    bg.brightness( 1.2f );
++                    Sample.INSTANCE.play( Assets.Sounds.CLICK );
++                }
++                @Override
++                protected void onPointerUp() {
++                    bg.resetColor();
++                }
++                @Override
++                protected void onClick() {
++                    ItemButton.this.onClick();
++                }
++            };
++            slot.enable(true);
++            add( slot );
++        }
++
++        protected void onClick() {}
++
++        @Override
++        protected void layout() {
++            super.layout();
++
++            bg.x = x;
++            bg.y = y;
++            bg.size( width, height );
++
++            slot.setRect( x + 2, y + 2, width - 4, height - 4 );
++        }
++
++        public void item( Item item ) {
++            slot.item( this.item = item );
++        }
++
++        public void clear(){
++            slot.clear();
++        }
++    }
++}
+\ No newline at end of file
+diff --git a/core/src/main/assets/sprites/light_orb.png b/core/src/main/assets/sprites/light_orb.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..bae4145e0acb67b7e184185ebf6a2e208765eca0
+GIT binary patch
+literal 1183
+zc$@*B1YrA#P)<h;3K|Lk000e1NJLTq004jh000mO1^@s6-dJ~t00001b5ch_0Itp)
+z=>Px#1ZP1_K>z@;j|==^1poj532;bRa{vGi!vFvd!vV){sAK>D1T;xRK~!i%?O1Db
+z+At853BiDQbUFq4wN3i}e^8rzhA>G;@Pmi3x+_b@82m^}m`>`QVPpwbce-1hWJHY`
+zHEPuOUt#I?0N(OvPd^eHr~hN4p9=wA15G#XDOBbXDZW$#LPX#P`nfVNk6IVFW}Z^~
+z3Fjl=NB{`LB$EAUBwHc~Hlpt=9SjF$fdQ|DW*A1}hj>JYX5*m;o~OH|z#KjBm%2-S
+z2MtB=77<;cX~#XaKJxvzn-B0lp`ifDC(kY8(O)#Q#n{kCADkW9N&ugBY<$%Ez>U~m
+z5{Urd3>V+-_HMmh=!#wFiOp6DDQ$7pcyx+_0q!*#2i#}&XS12;beKDp#6m6sKE-nl
+zzRP}w&mgZcN2mr0fO(j_4n-6Mftmw+CddMRrGAuwUN?<VeA5)~GsZ&j5<#Y+*9^|+
+zDITG(^RH+Y;H=}3e1P9XV}tLmV6&}k&bihV_?1QUx8UMU5Qa;y?}gh1k{&|Rk!ZD=
+zB7_(a7!SW;CCGzql21$~6EPSJP(gw!T%u``PZ&M{KF4D<lmi03S(3{+2=JNs27I76
+zPJzBbd^gh!kBPOxJF<;2Ca>RhzCR5H!^Bs_Z;FP(D1_!CW;ZUm;|X<RC2Pg^N0s@#
+zpacM@5;h)x5z%ffEUO83_*Env$5hjOwKxUt+AK^kD`0nuZvqRH?g#{pNkjnmZW=yC
+zh$b&FEAXCYv*hGT@kVp?aEw;h`SyrF>8_<XtQ_Dh;S0-p5t<N-7JNKM$|fsLsff-6
+zB><Eh3c%WKo`oN*Ap&d~wYY|8TqOdK1<H&}vQH%v$m1F8CX=yxNb_^%%7a=<mcuHf
+zVZ@#Q>*1J+eAfRsA<AtYPYHAktcUqt8!-nW==Wexoit_ZO?*lFo3eT2>w6(>$Vd6V
+zbsSVg3)NEc{13(J%L~s#mO-9}Coh5+_kH)5D)Z@G&&7e;$7A7{2!80hci_tdKA-g&
+zUU&i3P*oypKkh5~(FF^3Ifjhwr%&^X%#KHU!6qDRnocL#Fh!6?@L7K~$^>*aBm!VC
+z@VP@3=yBICUZrT+Bhj{3d@bAJyRsxEA~4_^1jc!r-s+(utRMo2Me0CEf%zyN&RzN{
+zh~H2|xI|@>DS5dn5@F!G_xPc)yNBi-TmoT78SuS(o0}v~B!*<HuM%4c;Omh5Lx0DW
+zHq1G3q%>XPxZ{mDcq=WvffL}GS1_|Gax1^u=#tFy(?o{Cdn>=gy8zF01~jfL#eRTC
+zo4l007}p^Rz6C5#tsTGT8O=`!&RQiByC1f=S@_>a;hhD1UIKaJm#*Jim}&x1(O2>-
+z#rqt%SgE-r5MT<CV%WV=KokNK%LI~}`~QPZq7f@?u;npX=@kxq#-6q~51)D0Xo8=2
+x@q8D2NC8|DNF;@31eg1NLya0WYW!;u;x}J~5ykpQgSG$w002ovPDHLkV1jn=5>o&G
+

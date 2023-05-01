@@ -1,0 +1,533 @@
+Index: core/src/main/assets/messages/actors/actors.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/actors/actors.properties b/core/src/main/assets/messages/actors/actors.properties
+--- a/core/src/main/assets/messages/actors/actors.properties	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/assets/messages/actors/actors.properties	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -369,7 +369,9 @@
+ actors.buffs.wellfed.name=well fed
+ actors.buffs.wellfed.desc=You feel quite satisfied and full.\n\nWhile well fed, your hunger will not increase, and you will heal an additional amount of health over time.\n\nTurns remaining: %d.
+ 
+-
++actors.buffs.soggy.name=soggy
++actors.buffs.soggy.desc=You feel all wet! \n\nBeing wet makes you more suscettible to frost and chilling, and makes you unable to use scrolls. \n\nThankfully, it also gives you a shield against burning.\n\nTurns remaining: %d.
++actors.buffs.soggy.heromsg=You feel wet!
+ 
+ ###hero
+ 
+Index: core/src/main/assets/messages/items/items.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/items/items.properties b/core/src/main/assets/messages/items/items.properties
+--- a/core/src/main/assets/messages/items/items.properties	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/assets/messages/items/items.properties	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -946,6 +946,7 @@
+ items.scrolls.scroll.unknown_desc=An indecipherable magical rune is written on this parchment. Who knows what it will do when read aloud?
+ items.scrolls.scroll.blinded=You can't read a scroll while blinded.
+ items.scrolls.scroll.no_magic=You can't read a scroll while magic immune.
++items.scrolls.scroll.soggy=You can't read a scroll while it is wet.
+ items.scrolls.scroll.cursed=Your cursed spellbook prevents you from invoking this scroll's magic! A scroll of remove curse might be strong enough to still work though...
+ items.scrolls.scroll$placeholder.name=scroll
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/Soggy.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/Soggy.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/Soggy.java
+new file mode 100644
+--- /dev/null	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/Soggy.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -0,0 +1,92 @@
++/*
++ * Pixel Dungeon
++ * Copyright (C) 2012-2015 Oleg Dolya
++ *
++ * Shattered Pixel Dungeon
++ * Copyright (C) 2014-2022 Evan Debenham
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>
++ */
++
++package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
++
++import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
++import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
++import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Thief;
++import com.shatteredpixel.shatteredpixeldungeon.items.Item;
++import com.shatteredpixel.shatteredpixeldungeon.items.food.FrozenCarpaccio;
++import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
++import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
++import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
++import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
++import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
++import com.watabou.noosa.Image;
++import com.watabou.utils.Random;
++
++import java.util.ArrayList;
++
++public class Soggy extends FlavourBuff {
++
++    public static final float DURATION	= 10f;
++
++    {
++        type = buffType.NEGATIVE;
++        announced = true;
++    }
++
++    @Override
++    public boolean attachTo( Char target ) {
++        Buff.detach( target, Burning.class );
++        Buff.detach( target, Light.class );
++        if (super.attachTo( target )) {
++
++            target.paralysed++;
++            Buff.detach( target, Chill.class );
++
++            return true;
++        } else {
++            return false;
++        }
++    }
++
++    @Override
++    public void detach() {
++        super.detach();
++    }
++
++    @Override
++    public int icon() {
++        return BuffIndicator.SOGGY;
++    }
++
++    @Override
++    public void tintIcon(Image icon) {
++        icon.hardlight(0f, 0f, 0f);
++    }
++
++    @Override
++    public float iconFadePercent() {
++        return Math.max(0, (DURATION - visualcooldown()) / DURATION);
++    }
++
++    @Override
++    public void fx(boolean on) {
++        if (on) {
++        } else {
++        }
++    }
++
++}
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -114,7 +114,7 @@
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+ 		i = new WandOfDisintegration();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new WandOfCorruption();
++		i = new WandOfFireblast();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+ 		i = new WandOfTransfusion();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -12,7 +12,9 @@
+ import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
++import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
++import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
+@@ -25,6 +27,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Soggy;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+@@ -39,6 +42,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorruption;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
+@@ -234,8 +238,16 @@
+                         Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f) );
+                 }
+                 if (hit( this, enemy, true ) && (LightOrb.wand instanceof WandOfTransfusion)) {
++                        Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f) );
++                }
++
++                if (hit( this, enemy, true ) && (LightOrb.wand instanceof WandOfFireblast)) {
+                         enemy.damage( Random.NormalIntRange(damagerollmin, damagerollmax), new YogFist.DarkFist.DarkBolt() );
+                         Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f) );
++                        Buff.affect(enemy, Burning.class);
++                        for (int i : PathFinder.NEIGHBOURS9) {
++                                GameScene.add(Blob.seed(enemy.pos + i, 2, Fire.class));
++                        }
+                 }
+         }
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/DarkGold.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/DarkGold.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/DarkGold.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/DarkGold.java	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/quest/DarkGold.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -41,5 +41,15 @@
+ 	@Override
+ 	public boolean isIdentified() {
+ 		return true;
++	};
++
++	@Override
++	public int value() {
++		return 15;
++	};
++
++	@Override
++	public int energyVal() {
++		return 1;
+ 	}
+ }
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -27,6 +27,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ScrollEmpower;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Soggy;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+@@ -164,9 +165,14 @@
+ 			
+ 			if (hero.buff(MagicImmune.class) != null){
+ 				GLog.w( Messages.get(this, "no_magic") );
+-			} else if (hero.buff( Blindness.class ) != null) {
++			}
++			else if (hero.buff( Blindness.class ) != null) {
+ 				GLog.w( Messages.get(this, "blinded") );
+-			} else if (hero.buff(UnstableSpellbook.bookRecharge.class) != null
++			}
++			else if (hero.buff( Soggy.class ) != null) {
++				GLog.w( Messages.get(this, "soggy") );
++			}
++			else if (hero.buff(UnstableSpellbook.bookRecharge.class) != null
+ 					&& hero.buff(UnstableSpellbook.bookRecharge.class).isCursed()
+ 					&& !(this instanceof ScrollOfRemoveCurse || this instanceof ScrollOfAntiMagic)){
+ 				GLog.n( Messages.get(this, "cursed") );
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -91,7 +91,11 @@
+ 		usesTargeting = true;
+ 		bones = true;
+ 	}
+-	
++	@Override
++	public int energyVal() {
++		return 12;
++	}
++
+ 	@Override
+ 	public ArrayList<String> actions( Hero hero ) {
+ 		ArrayList<String> actions = super.actions( hero );
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/traps/GeyserTrap.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/traps/GeyserTrap.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/traps/GeyserTrap.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/traps/GeyserTrap.java	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/traps/GeyserTrap.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -26,6 +26,10 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Soggy;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+@@ -72,7 +76,8 @@
+ 		for (int i : PathFinder.NEIGHBOURS8){
+ 			Char ch = Actor.findChar(pos + i);
+ 			if (ch != null){
+-				//trace a ballistica to our target (which will also extend past them)
++				Buff.affect(ch, Soggy.class, 40);
++				Buff.detach( ch, Light.class );
+ 				Ballistica trajectory = new Ballistica(pos, ch.pos, Ballistica.STOP_TARGET);
+ 				//trim it to just be the part that goes past them
+ 				trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size()-1), Ballistica.PROJECTILE);
+@@ -83,11 +88,13 @@
+ 
+ 		Char ch = Actor.findChar(pos);
+ 		if (ch != null){
++
+ 			int targetpos = -1;
+ 			if (centerKnockBackDirection != -1){
+ 				targetpos = centerKnockBackDirection;
+ 			} else if (ch == Dungeon.hero){
+-				//if it is the hero, random direction that isn't into a hazard
++				Buff.affect(ch, Soggy.class, 40);
++				Buff.detach( ch, Light.class );
+ 				ArrayList<Integer> candidates = new ArrayList<>();
+ 				for (int i : PathFinder.NEIGHBOURS8){
+ 					//add as a candidate if both cells on the trajectory are safe
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/BuffIndicator.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/BuffIndicator.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/BuffIndicator.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/BuffIndicator.java	(revision 5d74b6908e50158bc774b8fe27897c3a98462a1b)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/BuffIndicator.java	(revision 7dbe45fa82e4b0660050abae63a9b5740fcd2a2e)
+@@ -111,6 +111,7 @@
+ 	public static final int INVERT_MARK = 57;
+ 	public static final int NATURE_POWER= 58;
+ 	public static final int AMULET      = 59;
++	public static final int SOGGY      = 60;
+ 
+ 	public static final int SIZE_SMALL  = 7;
+ 	public static final int SIZE_LARGE  = 16;
+diff --git a/core/src/main/assets/interfaces/buffs.png b/core/src/main/assets/interfaces/buffs.png
+index 03e854791f6c5aa4c287b8e21cf87dea3c97838a..996e55520fbea6c6efd205b18edee5e88512cbea
+GIT binary patch
+literal 2721
+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
+b9ZLNN3(j2hc1r6Y00000NkvXXu0mjf6jm)d
+
+diff --git a/core/src/main/assets/interfaces/large_buffs.png b/core/src/main/assets/interfaces/large_buffs.png
+index 6a9533b712f9c11a89ae7e8202d82f2b42a1c1db..fd264495bd45dff19d346dfeb2f65c6d13c7f03a
+GIT binary patch
+literal 6577
+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
+EKXCD+cmMzZ
+

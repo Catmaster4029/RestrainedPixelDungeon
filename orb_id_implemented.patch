@@ -1,0 +1,697 @@
+Index: SPD-classes/src/main/java/com/watabou/utils/PathFinder.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java b/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java
+--- a/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java	(revision 0fc728c21f154fca379b0deb5aa84b3e0fd4ec5d)
++++ b/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
+@@ -45,6 +45,12 @@
+ 	public static int[] NEIGHBOURS9;
+ 	public static int[] NEIGHBOURS2;
+ 
++	public static int[] RIGHT;
++	public static int[] LEFT;
++	public static int[] UP;
++	public static int[] DOWN;
++
++
+ 	//similar to their equivalent neighbour arrays, but the order is clockwise.
+ 	//Useful for some logic functions, but is slower due to lack of array-access order.
+ 	public static int[] CIRCLE4;
+@@ -70,6 +76,11 @@
+ 		NEIGHBOURS8 = new int[]{-width-1, -width, -width+1, -1, +1, +width-1, +width, +width+1};
+ 		NEIGHBOURS9 = new int[]{-width-1, -width, -width+1, -1, 0, +1, +width-1, +width, +width+1};
+ 
++		RIGHT = new int[]{ +1};
++		LEFT = new int[]{ -1};
++		UP = new int[]{ +width};
++		DOWN = new int[]{ -width};
++
+ 		CIRCLE4 = new int[]{-width, +1, +width, -1};
+ 		CIRCLE8 = new int[]{-width-1, -width, -width+1, +1, +width+1, +width, +width-1, -1};
+ 	}
+Index: core/src/main/assets/messages/actors/actors.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/actors/actors.properties b/core/src/main/assets/messages/actors/actors.properties
+--- a/core/src/main/assets/messages/actors/actors.properties	(revision 0fc728c21f154fca379b0deb5aa84b3e0fd4ec5d)
++++ b/core/src/main/assets/messages/actors/actors.properties	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
+@@ -1237,3 +1237,13 @@
+ actors.mobs.lightorb$wndorboutfit.cant_unique=Don't give the orb your personal staff!
+ actors.mobs.lightorb$wndorboutfit.cant_unidentified=The orb flashes with light, rejecting the wand: it needs to know what it's working with!
+ actors.mobs.lightorb$wndorboutfit.cant_cursed=The orb flashes with light, rejecting the wand: the dark magic emanating from the wand disgusts it. 
++
++actors.mobs.lightorb2$wndorbsmanage.orb1=Equip wand
++actors.mobs.lightorb2$wndorbsmanage.move=Move
++actors.mobs.lightorb2$wndorbsmanage.direct=Direct
++actors.mobs.lightorb2$wndorboutfit.desc=O caelesti sphaerae, quod artificium hoc accipere opus tuum permanere subsignata in auxilio opus nefaria.
++actors.mobs.lightorb2$wndorboutfit.title=Choose a wand
++actors.mobs.lightorb2$wndorboutfit.wandprompt=Choose a wand
++actors.mobs.lightorb2$wndorboutfit.cant_unique=Don't give the orb your personal staff!
++actors.mobs.lightorb2$wndorboutfit.cant_unidentified=The orb flashes with light, rejecting the wand: it needs to know what it's working with!
++actors.mobs.lightorb2$wndorboutfit.cant_cursed=The orb flashes with light, rejecting the wand: the dark magic emanating from the wand disgusts it. 
+\ No newline at end of file
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java	(revision 0fc728c21f154fca379b0deb5aa84b3e0fd4ec5d)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Assets.java	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
+@@ -297,5 +297,6 @@
+ 		public static final String SPIRIT_HAWK= "sprites/spirit_hawk.png";
+ 		public static final String RED_SENTRY= "sprites/red_sentry.png";
+ 		public static final String LIGHT_ORB= "sprites/light_orb.png";
++		public static final String LIGHT_ORB2= "sprites/light_orb2.png";
+ 	}
+ }
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 0fc728c21f154fca379b0deb5aa84b3e0fd4ec5d)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
+@@ -11,6 +11,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+ import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
+@@ -20,6 +21,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+@@ -43,7 +45,7 @@
+ import com.watabou.utils.PathFinder;
+ import com.watabou.utils.Random;
+ 
+-public class LightOrb extends Mob {
++public class LightOrb extends DirectableAlly {
+ 
+         private static final float TIME_TO_ZAP	= 1f;
+         private LightOrb orb = null;
+@@ -66,6 +68,7 @@
+                 immunities.add( Burning.class );
+                 immunities.add( ScrollOfRetribution.class );
+                 immunities.add( ScrollOfPsionicBlast.class );
++                immunities.add( Wand.class );
+         }
+ 
+         @Override
+@@ -75,7 +78,7 @@
+ 
+         @Override
+         public int attackSkill( Char target ) {
+-                return 25;
++                return INFINITE_ACCURACY;
+         }
+ 
+         @Override
+@@ -90,16 +93,13 @@
+ 
+         @Override
+         public boolean interact(Char c) {
+-                orbID = orb.id();
+-                if (c != Dungeon.hero) {
+-                        return true;
+-                }
+                 Game.runOnRenderThread(new Callback() {
+                         @Override
+                         public void call() {
+                                 menu();
+                         }
+-                });
++                }
++                );
+                 return true;
+         }
+ 
+@@ -138,12 +138,6 @@
+                                 l.weaken(50);
+                         }
+ 
+-                        if (!enemy.isAlive() && enemy == Dungeon.hero) {
+-                                Badges.validateDeathFromEnemyMagic();
+-                                Dungeon.fail( getClass() );
+-                                GLog.n( Messages.get(Char.class, "kill", name()) );
+-                        }
+-
+                 } else {
+ 
+                         enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
+@@ -202,7 +196,7 @@
+ 
+ 
+         public static void spawnNext( int pos ) {
+-                for (int n : PathFinder.NEIGHBOURS2) {
++                for (int n : PathFinder.LEFT) {
+                         spawnAtOrb(pos + n);
+                 }
+         }
+@@ -314,11 +308,11 @@
+                         btnWand = new WndBlacksmith.ItemButton(){
+                                 @Override
+                                 protected void onClick(){
+-                                        if (orb.wand != null)
++                                        if (orb.wand != null) {
+                                                 item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
+                                                 if (!orb.wand.doPickUp(Dungeon.hero)){
+                                                 Dungeon.level.drop( orb.wand, Dungeon.hero.pos);
+-                                                }
++                                                }}
+ 
+                                         else {
+                                                 GameScene.selectItem(new WndBag.ItemSelector() {
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java
+new file mode 100644
+--- /dev/null	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb2.java	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
+@@ -0,0 +1,375 @@
++package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
++
++import com.shatteredpixel.shatteredpixeldungeon.Badges;
++import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
++import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
++import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
++import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
++import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
++import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
++import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
++import com.shatteredpixel.shatteredpixeldungeon.items.Item;
++import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
++import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
++import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
++import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
++import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
++import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
++import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.LightOrbSprite;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.LightOrbSprite2;
++import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
++import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
++import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
++import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
++import com.shatteredpixel.shatteredpixeldungeon.windows.IconTitle;
++import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
++import com.shatteredpixel.shatteredpixeldungeon.windows.WndBlacksmith;
++import com.watabou.noosa.Game;
++import com.watabou.noosa.tweeners.AlphaTweener;
++import com.watabou.utils.Bundle;
++import com.watabou.utils.Callback;
++import com.watabou.utils.PathFinder;
++import com.watabou.utils.Random;
++
++public class LightOrb2 extends Mob {
++
++        private static final float TIME_TO_ZAP	= 1f;
++        private LightOrb2 orb2 = null;
++        private static Wand wand = null;
++        private int orb2ID = 0;
++
++        {
++                spriteClass = LightOrbSprite2.class;
++
++                HP = HT = 1 ;
++                defenseSkill = 1000;
++                state = HUNTING;
++                alignment = Alignment.ALLY;
++                intelligentAlly = true;
++        }
++
++        {
++                immunities.add( ToxicGas.class );
++                immunities.add( CorrosiveGas.class );
++                immunities.add( Burning.class );
++                immunities.add( ScrollOfRetribution.class );
++                immunities.add( ScrollOfPsionicBlast.class );
++        }
++
++        @Override
++        public int damageRoll() {
++                return Random.NormalIntRange( 12, 18 );
++        }
++
++        @Override
++        public int attackSkill( Char target ) {
++                return 25;
++        }
++
++        @Override
++        public int drRoll() {
++                return Random.NormalIntRange(0, 8);
++        }
++
++        @Override
++        public int defenseSkill( Char enemy ) {
++                return INFINITE_EVASION;
++        }
++
++        @Override
++        public boolean interact(Char c) {
++                Game.runOnRenderThread(new Callback() {
++                        @Override
++                        public void call() {
++                                menu();
++                        }
++                });
++                return true;
++        }
++
++                @Override
++        protected boolean canAttack( Char enemy ) {
++                return new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
++        }
++
++        protected boolean doAttack( Char enemy ) {
++
++                if (Dungeon.level.adjacent( pos, enemy.pos )) {
++
++                        return super.doAttack( enemy );
++
++                } else {
++
++                        if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
++                                sprite.zap( enemy.pos );
++                                return false;
++                        } else {
++                                zap();
++                                return true;
++                        }
++                }
++        }
++        protected void zap() {
++                spend( 1f );
++
++                Invisibility.dispel(this);
++                if (hit( this, enemy, true )) {
++
++                        enemy.damage( Random.NormalIntRange(10, 20), new YogFist.DarkFist.DarkBolt() );
++
++                        Light l = enemy.buff(Light.class);
++                        if (l != null){
++                                l.weaken(50);
++                        }
++
++                        if (!enemy.isAlive() && enemy == Dungeon.hero) {
++                                Badges.validateDeathFromEnemyMagic();
++                                Dungeon.fail( getClass() );
++                                GLog.n( Messages.get(Char.class, "kill", name()) );
++                        }
++
++                } else {
++
++                        enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
++                }
++
++        }
++
++        public void onZapComplete() {
++                zap();
++                next();
++        }
++
++        public void menu() {
++                GameScene.show(new WndOrbsManage(this));
++        }
++
++
++        public String status() {
++                if (orb2 == null && orb2ID != 0){
++                        try {
++                                Actor a = Actor.findById(orb2ID);
++                                if (a != null) {
++                                        orb2 = (LightOrb2) a;
++                                } else {
++                                        orb2ID = 0;
++                                }
++                        } catch ( ClassCastException e ){
++                                ShatteredPixelDungeon.reportException(e);
++                                orb2ID = 0;
++                        }
++                }
++                        return ((orb2.HP*100) / orb2.HT) + "%";
++                }
++
++
++        private static final String ORBID =       "orbID";
++        private static final String WAND =         "wand";
++
++        @Override
++        public void storeInBundle( Bundle bundle ) {
++                super.storeInBundle(bundle);
++
++                bundle.put( ORBID, orb2ID );
++
++                if (wand != null) bundle.put( WAND, wand );
++        }
++
++        @Override
++        public void restoreFromBundle( Bundle bundle ) {
++                super.restoreFromBundle(bundle);
++
++                orb2ID = bundle.getInt( ORBID );
++                if (bundle.contains(WAND)) wand = (Wand) bundle.get( WAND );
++        }
++
++
++
++        public static void spawnNext( int pos ) {
++                for (int n : PathFinder.RIGHT) {
++                        spawnAtOrb(pos + n);
++                }
++        }
++        public static LightOrb2 spawnAtOrb(int pos ) {
++                if ((!Dungeon.level.solid[pos] || Dungeon.level.passable[pos]) && Actor.findChar( pos ) == null) {
++
++                        LightOrb2 w = new LightOrb2();
++                        w.pos = pos;
++                        Dungeon.level.occupyCell(w);
++                        GameScene.add( w );
++                        w.sprite.alpha( 0 );
++                        w.sprite.parent.add( new AlphaTweener( w.sprite, 1, 0.5f ) );
++
++                        w.sprite.emitter().burst( ShadowParticle.CURSE, 5 );
++                        return w;
++                } else {
++                        return null;
++                }
++        }
++
++        public class WndOrbsManage extends Window {
++
++                private static final int WIDTH      = 120;
++                private static final int BTN_HEIGHT = 20;
++                private static final int GAP        = 2;
++
++                public int pos = 0;
++
++                public CharSprite sprite;
++
++                public WndOrbsManage(LightOrb2 orb2) {
++
++                        super();
++
++                        RedButton btnorb1 = new RedButton( Messages.get(this, "orb1") ) {
++                                @Override
++                                protected void onClick() {
++                                        GameScene.show(new WndOrbOutfit(orb2));
++                                }
++
++                        };
++                        RedButton move = new RedButton( Messages.get(this, "move") ) {
++                                @Override
++                                protected void onClick() {
++
++                                }
++                        };
++
++//                        RedButton direct = new RedButton( Messages.get(this, "direct") ) {
++//                                @Override
++//                                protected void onClick() {
++//                                        if (orb == null && orbID != 0){
++//                                                Actor a = Actor.findById(orbID);
++//                                                if (a != null){
++//                                                        orb = (LightOrb)a;
++//                                                } else {
++//                                                        orbID = 0;
++//                                                }
++//                                        }
++//                                        if (orb != null) GameScene.selectCell(ghostDirector);
++
++//                                }
++
++
++//                        };
++
++                        btnorb1.setRect( 0, GAP - 2 , WIDTH, BTN_HEIGHT );
++                        move.setRect( 0, (int)btnorb1.bottom() + GAP, WIDTH, BTN_HEIGHT );
++//                        direct.setRect( 0, (int)move.bottom() + GAP, WIDTH, BTN_HEIGHT );
++                        add( btnorb1 );
++                        add( move );
++//                        add( direct );
++
++                        resize( WIDTH, 64 );
++                }
++
++        }
++
++        public static class WndOrbOutfit extends Window {
++
++                private static final int WIDTH      = 120;
++                private static final int BTN_HEIGHT = 20;
++                private static final int GAP        = 2;
++                private static final int BTN_SIZE	= 32;
++
++                protected WndBlacksmith.ItemButton btnWand;
++
++                public int pos = 0;
++
++                public CharSprite sprite;
++
++                public WndOrbOutfit(LightOrb2 orb2) {
++
++
++                        super();
++
++                        IconTitle titlebar = new IconTitle();
++                        titlebar.icon( new ItemSprite(ItemSpriteSheet.MAGES_STAFF));
++                        titlebar.label( Messages.get(this, "title") );
++                        titlebar.setRect( 0, 0, WIDTH, 0 );
++                        add( titlebar );
++
++                        RenderedTextBlock message =
++                                PixelScene.renderTextBlock(Messages.get(this, "desc"), 6);
++                        message.maxWidth( WIDTH );
++                        message.setPos(0, titlebar.bottom() + GAP);
++                        add( message );
++
++                        btnWand = new WndBlacksmith.ItemButton(){
++                                @Override
++                                protected void onClick(){
++                                        if
++                                        (orb2.wand != null) {
++                                                item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
++                                                if (!orb2.wand.doPickUp(Dungeon.hero)){
++                                                Dungeon.level.drop( orb2.wand, Dungeon.hero.pos);
++                                                }}
++
++                                        else {
++                                                GameScene.selectItem(new WndBag.ItemSelector() {
++
++                                                        @Override
++                                                        public String textPrompt() {
++                                                                return Messages.get(LightOrb2.WndOrbOutfit.class, "wandprompt");
++                                                        }
++
++                                                        @Override
++                                                        public Class<?extends Bag> preferredBag(){
++                                                                return MagicalHolster.class;
++                                                        }
++
++                                                        @Override
++                                                        public boolean itemSelectable(Item item) {
++                                                                return item instanceof Wand;
++                                                        }
++
++                                                        @Override
++                                                        public void onSelect(Item item) {
++                                                                if (!(item instanceof Wand)) {
++
++                                                                } else if (item.unique) {
++                                                                        GLog.w( Messages.get(LightOrb2.WndOrbOutfit.class, "cant_unique"));
++                                                                        hide();
++                                                                } else if (!item.isIdentified()) {
++                                                                        GLog.w( Messages.get(LightOrb2.WndOrbOutfit.class, "cant_unidentified"));
++                                                                        hide();
++                                                                } else if (item.cursed) {
++                                                                        GLog.w( Messages.get(LightOrb2.WndOrbOutfit.class, "cant_cursed"));
++                                                                        hide();
++                                                                }
++                                                                else {
++                                                                        item.detach(Dungeon.hero.belongings.backpack);
++                                                                        LightOrb2.wand = (Wand) item;
++                                                                        item(LightOrb2.wand);
++                                                                }
++
++                                                        }
++                                                });
++                                        }
++                                }
++                        };
++                        if (LightOrb2.wand != null) {
++                                btnWand.item(LightOrb2.wand);}
++                        else {
++                                btnWand.item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
++                        }
++                        btnWand.setRect( 45, message.bottom() + 5, BTN_SIZE, BTN_SIZE );
++                        add( btnWand );
++                        resize(WIDTH, 76);
++                }
++
++        }
++
++
++
++}
++
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java
+new file mode 100644
+--- /dev/null	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
+@@ -0,0 +1,73 @@
++package com.shatteredpixel.shatteredpixeldungeon.sprites;
++
++import com.shatteredpixel.shatteredpixeldungeon.Assets;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb2;
++import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
++import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
++import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
++import com.watabou.glwrap.Blending;
++import com.watabou.noosa.TextureFilm;
++import com.watabou.noosa.audio.Sample;
++import com.watabou.utils.Callback;
++
++public class LightOrbSprite2 extends MobSprite {
++
++    public LightOrbSprite2() {
++        super();
++
++        texture( Assets.Sprites.LIGHT_ORB2 );
++
++        TextureFilm frames = new TextureFilm( texture, 14, 15 );
++
++        idle = new Animation( 5, true );
++        idle.frames( frames, 0, 1 );
++
++        run = new Animation( 10, true );
++        run.frames( frames, 0, 1 );
++
++        attack = new Animation( 10, false );
++        attack.frames( frames, 0, 2, 3 );
++
++        die = new Animation( 8, false );
++        die.frames( frames, 0, 4, 5, 6, 7 );
++
++        play( idle );
++    }
++
++    @Override
++    public void draw() {
++        Blending.setLightMode();
++        super.draw();
++        Blending.setNormalMode();
++    }
++
++    @Override
++    public void die() {
++        super.die();
++        emitter().start( ShaftParticle.FACTORY, 0.3f, 4 );
++        emitter().start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
++    }
++
++    @Override
++    public int blood() {
++        return 0xFFFFFF;
++    }
++    public void zap( int cell ) {
++
++        super.zap( cell );
++
++        MagicMissile.boltFromChar( parent,
++                MagicMissile.SHADOW,
++                this,
++                cell,
++                new Callback() {
++                    @Override
++                    public void call() {
++                        ((LightOrb2)ch).onZapComplete();
++                    }
++                } );
++        Sample.INSTANCE.play( Assets.Sounds.ZAP );
++    }
++}
++
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java	(revision 0fc728c21f154fca379b0deb5aa84b3e0fd4ec5d)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java	(revision cd432852b60ef21bacae82c990dc37fc293dd21a)
+@@ -25,6 +25,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb2;
+ import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+@@ -77,6 +78,7 @@
+ 								tome.choose( subCls );
+ 								if (Dungeon.hero.subClass == HeroSubClass.LIGHTBENDER){
+ 									LightOrb.spawnNext( hero.pos );
++									LightOrb2.spawnNext( hero.pos );
+ 								}
+ 							}
+ 						}
+diff --git a/core/src/main/assets/sprites/light_orb2.png b/core/src/main/assets/sprites/light_orb2.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..bae4145e0acb67b7e184185ebf6a2e208765eca0
+GIT binary patch
+literal 1183
+zc$@*B1YrA#P)<h;3K|Lk000e1NJLTq004jh000mO1^@s6-dJ~t00001b5ch_0Itp)
+z=>Px#1ZP1_K>z@;j|==^1poj532;bRa{vGi!vFvd!vV){sAK>D1T;xRK~!i%?O1Db
+z+At853BiDQbUFq4wN3i}e^8rzhA>G;@Pmi3x+_b@82m^}m`>`QVPpwbce-1hWJHY`
+zHEPuOUt#I?0N(OvPd^eHr~hN4p9=wA15G#XDOBbXDZW$#LPX#P`nfVNk6IVFW}Z^~
+z3Fjl=NB{`LB$EAUBwHc~Hlpt=9SjF$fdQ|DW*A1}hj>JYX5*m;o~OH|z#KjBm%2-S
+z2MtB=77<;cX~#XaKJxvzn-B0lp`ifDC(kY8(O)#Q#n{kCADkW9N&ugBY<$%Ez>U~m
+z5{Urd3>V+-_HMmh=!#wFiOp6DDQ$7pcyx+_0q!*#2i#}&XS12;beKDp#6m6sKE-nl
+zzRP}w&mgZcN2mr0fO(j_4n-6Mftmw+CddMRrGAuwUN?<VeA5)~GsZ&j5<#Y+*9^|+
+zDITG(^RH+Y;H=}3e1P9XV}tLmV6&}k&bihV_?1QUx8UMU5Qa;y?}gh1k{&|Rk!ZD=
+zB7_(a7!SW;CCGzql21$~6EPSJP(gw!T%u``PZ&M{KF4D<lmi03S(3{+2=JNs27I76
+zPJzBbd^gh!kBPOxJF<;2Ca>RhzCR5H!^Bs_Z;FP(D1_!CW;ZUm;|X<RC2Pg^N0s@#
+zpacM@5;h)x5z%ffEUO83_*Env$5hjOwKxUt+AK^kD`0nuZvqRH?g#{pNkjnmZW=yC
+zh$b&FEAXCYv*hGT@kVp?aEw;h`SyrF>8_<XtQ_Dh;S0-p5t<N-7JNKM$|fsLsff-6
+zB><Eh3c%WKo`oN*Ap&d~wYY|8TqOdK1<H&}vQH%v$m1F8CX=yxNb_^%%7a=<mcuHf
+zVZ@#Q>*1J+eAfRsA<AtYPYHAktcUqt8!-nW==Wexoit_ZO?*lFo3eT2>w6(>$Vd6V
+zbsSVg3)NEc{13(J%L~s#mO-9}Coh5+_kH)5D)Z@G&&7e;$7A7{2!80hci_tdKA-g&
+zUU&i3P*oypKkh5~(FF^3Ifjhwr%&^X%#KHU!6qDRnocL#Fh!6?@L7K~$^>*aBm!VC
+z@VP@3=yBICUZrT+Bhj{3d@bAJyRsxEA~4_^1jc!r-s+(utRMo2Me0CEf%zyN&RzN{
+zh~H2|xI|@>DS5dn5@F!G_xPc)yNBi-TmoT78SuS(o0}v~B!*<HuM%4c;Omh5Lx0DW
+zHq1G3q%>XPxZ{mDcq=WvffL}GS1_|Gax1^u=#tFy(?o{Cdn>=gy8zF01~jfL#eRTC
+zo4l007}p^Rz6C5#tsTGT8O=`!&RQiByC1f=S@_>a;hhD1UIKaJm#*Jim}&x1(O2>-
+z#rqt%SgE-r5MT<CV%WV=KokNK%LI~}`~QPZq7f@?u;npX=@kxq#-6q~51)D0Xo8=2
+x@q8D2NC8|DNF;@31eg1NLya0WYW!;u;x}J~5ykpQgSG$w002ovPDHLkV1jn=5>o&G
+

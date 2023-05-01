@@ -1,0 +1,399 @@
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java	(revision cf2ed4ac01220915bc9a05736fc819fb0e5e2571)
+@@ -62,8 +62,10 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
+ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Dagger;
+@@ -104,76 +106,14 @@
+ 
+ 		i = new MeatPie();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new MeatPie();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new MeatPie();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-
+-		i = new Shuriken();
++		i = new WandOfFrost();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new Shuriken();
++		i = new WandOfLightning();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new Tomahawk();
++		i = new WandOfDisintegration();
+ 		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new Tomahawk();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new Tomahawk();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new Tomahawk();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new Tomahawk();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new ScrollOfUpgrade();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new ScrollOfUpgrade();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-		i = new ScrollOfUpgrade();
+-		if (!Challenges.isItemBlocked(i)) i.collect();
+-
+-		//cheats for debug
+ 
+-		//i = new TengusMask();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new TengusMask();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new Shortsword();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new ScrollOfIdentify();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+ 
+-
+-		//i = new WandOfFireblast();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new MagicalHolster();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new WandOfFrost();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new WandOfMagicMissile();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new DriedRose();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+-		//i = new DriedRose();
+-		//if (!Challenges.isItemBlocked(i)) i.collect();
+ 
+ 		new VelvetPouch().collect();
+ 		Dungeon.LimitedDrops.VELVET_POUCH.drop();
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/LightOrb.java	(revision cf2ed4ac01220915bc9a05736fc819fb0e5e2571)
+@@ -8,7 +8,10 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chill;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Frost;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+@@ -25,6 +28,7 @@
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorruption;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
+ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+@@ -54,7 +58,7 @@
+ 
+         private static final float TIME_TO_ZAP	= 1f;
+         private LightOrb orb = null;
+-        private static Wand wand = null;
++        public static Wand wand = null;
+         private int orbID = 0;
+ 
+         {
+@@ -133,22 +137,47 @@
+         protected void zap() {
+                 int damagerollmax = 0;
+                 int damagerollmin = 0;
++                int wandlevel = 0;
+                 if (LightOrb.wand != null) {
++                        wandlevel = (LightOrb.wand).level();
+                         if (LightOrb.wand instanceof DamageWand){
+                                 damagerollmin = ((DamageWand) LightOrb.wand).min();
+                                 damagerollmax = ((DamageWand) LightOrb.wand).max();
++                                if (LightOrb.wand instanceof WandOfFrost) {
++                                        damagerollmin = ((DamageWand) LightOrb.wand).min();
++                                        damagerollmax = ((DamageWand) LightOrb.wand).max();
++                                        if (enemy.buff(Chill.class) != null){
++                                                float chillturns = Math.min(10, enemy.buff(Chill.class).cooldown());
++                                                damagerollmax = (int)Math.round(damagerollmax * Math.pow(0.9333f, chillturns));
++                                                damagerollmin = (int)Math.round(damagerollmin * Math.pow(0.9333f, chillturns));
++                                        }
++                                        if (enemy.buff(Frost.class) != null){
++                                                damagerollmax = 0;
++                                                damagerollmin = 0;
++                                        }
++                                }
+                         }
+                 }
+ 
+                 spend( 1f );
+                 Invisibility.dispel(this);
++                if (hit( this, enemy, true ) || (LightOrb.wand instanceof WandOfFrost)) {
++                        enemy.damage( Random.NormalIntRange(damagerollmin, damagerollmax), new YogFist.DarkFist.DarkBolt() );
++                        Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f) );
++                        if (Dungeon.level.water[enemy.pos])
++                                Buff.affect(enemy, Chill.class, 4+wandlevel);
++                        else
++                                Buff.affect(enemy, Chill.class, 2+wandlevel);
++
++                }
++
++
++
+                 if (hit( this, enemy, true ) || (LightOrb.wand instanceof WandOfMagicMissile)) {
+                         enemy.damage( Random.NormalIntRange(damagerollmin, damagerollmax), new YogFist.DarkFist.DarkBolt() );
+                         Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f) );
+-
+-
+-                } else {
+-
++                }
++                else {
+                         enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
+                 }
+ 
+@@ -317,11 +346,13 @@
+                         btnWand = new WndBlacksmith.ItemButton(){
+                                 @Override
+                                 protected void onClick(){
+-                                        if (orb.wand != null) {
+-                                                item(new WndBag.Placeholder(ItemSpriteSheet.WAND_HOLDER));
+-                                                if (!orb.wand.doPickUp(Dungeon.hero)){
+-                                                        Dungeon.level.drop( orb.wand, Dungeon.hero.pos);
+-                                                }}
++                                        if (LightOrb.wand != null){
++                                                item(new WndBag.Placeholder(ItemSpriteSheet.WEAPON_HOLDER));
++                                                if (!LightOrb.wand.doPickUp(Dungeon.hero)){
++                                                        Dungeon.level.drop( LightOrb.wand, Dungeon.hero.pos);
++                                                }
++                                                LightOrb.wand = null;
++                                        }
+ 
+                                         else {
+                                                 GameScene.selectItem(new WndBag.ItemSelector() {
+@@ -360,7 +391,6 @@
+                                                                         LightOrb.wand = (Wand) item;
+                                                                         item(LightOrb.wand);
+                                                                 }
+-
+                                                                 if ((item instanceof Wand)) {
+                                                                         LightOrb.wand = null;
+                                                                 }
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java	(revision 245766dfa879ed19c4a908056c2ff5a7790a78f4)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite.java	(revision cf2ed4ac01220915bc9a05736fc819fb0e5e2571)
+@@ -1,13 +1,28 @@
+ package com.shatteredpixel.shatteredpixeldungeon.sprites;
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.Assets;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb;
++import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
++import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.DamageWand;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorrosion;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfCorruption;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
+ import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfPrismaticLight;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
++import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
++import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+ import com.watabou.glwrap.Blending;
+ import com.watabou.noosa.TextureFilm;
+ import com.watabou.noosa.audio.Sample;
+@@ -85,8 +100,147 @@
+                             ((LightOrb)ch).onZapComplete();
+                         }
+                     } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfFireblast){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.FIRE,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfDisintegration){
++            super.zap( cell );
++            parent.add(new Beam.DeathRay(center(), DungeonTilemap.raisedTileCenterToWorld( cell )));
++            new Callback() {
++                @Override
++                public void call() {
++                    ((LightOrb)ch).onZapComplete();
++                }
++            };
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfCorrosion){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.CORROSION,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfBlastWave){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.FORCE,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfCorruption){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.SHADOW,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfLightning){
++            super.zap( cell );
++            parent.add( new Lightning.Arc(center(), ch.sprite.center()));
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfTransfusion){
++            super.zap( cell );
++            parent.add(new Beam.HealthRay(center(), DungeonTilemap.raisedTileCenterToWorld( cell )));
++            new Callback() {
++                @Override
++                public void call() {
++                    ((LightOrb)ch).onZapComplete();
++                }
++            };
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++            }
++        if (LightOrb.wand instanceof WandOfLivingEarth){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.EARTH,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfRegrowth){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.FOLIAGE_CONE,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfWarding){
++            super.zap( cell );
++            MagicMissile.boltFromChar( parent,
++                    MagicMissile.WARD,
++                    this,
++                    cell,
++                    new Callback() {
++                        @Override
++                        public void call() {
++                            ((LightOrb)ch).onZapComplete();
++                        }
++                    } );
++            Sample.INSTANCE.play( Assets.Sounds.ZAP );
++        }
++        if (LightOrb.wand instanceof WandOfPrismaticLight){
++            super.zap( cell );
++            parent.add(new Beam.LightRay(center(), DungeonTilemap.raisedTileCenterToWorld( cell )));
++            new Callback() {
++                @Override
++                public void call() {
++                    ((LightOrb)ch).onZapComplete();
++                }
++            };
+             Sample.INSTANCE.play( Assets.Sounds.ZAP );
+         }
++
++
++
+         else {
+             super.zap( cell );
+             MagicMissile.boltFromChar( parent,

@@ -1,0 +1,175 @@
+Index: core/src/main/assets/messages/windows/windows.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/core/src/main/assets/messages/windows/windows.properties b/core/src/main/assets/messages/windows/windows.properties
+--- a/core/src/main/assets/messages/windows/windows.properties	(revision 885c8848d2baabd2da2dc4c2cad778ccd51ef1e6)
++++ b/core/src/main/assets/messages/windows/windows.properties	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
+@@ -298,4 +298,4 @@
+ windows.wndwandmaker.farewell=Good luck in your quest, %s!
+ 
+ windows.wndorbsmanage.orb1=Orb 1
+-windows.wndorbsmanage.orb2=Orb 2
+\ No newline at end of file
++windows.wndorbsmanage.move=Move
+\ No newline at end of file
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java	(revision 885c8848d2baabd2da2dc4c2cad778ccd51ef1e6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
+@@ -251,7 +251,8 @@
+ 		
+ 		return true;
+ 	}
+-	
++
++
+ 	protected boolean moveSprite( int from, int to ) {
+ 		
+ 		if (sprite.isVisible() && (Dungeon.level.heroFOV[from] || Dungeon.level.heroFOV[to])) {
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java	(revision 885c8848d2baabd2da2dc4c2cad778ccd51ef1e6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
+@@ -5,8 +5,12 @@
+ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
++import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.CorrosiveGas;
++import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.ToxicGas;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AllyBuff;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
++import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+@@ -14,14 +18,19 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
++import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
++import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfPsionicBlast;
+ import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.LightOrbSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
++import com.shatteredpixel.shatteredpixeldungeon.windows.WndOrbsManage;
++import com.watabou.noosa.Game;
+ import com.watabou.noosa.audio.Sample;
+ import com.watabou.noosa.tweeners.AlphaTweener;
++import com.watabou.utils.Callback;
+ import com.watabou.utils.PathFinder;
+ import com.watabou.utils.Random;
+ 
+@@ -39,6 +48,14 @@
+                 intelligentAlly = true;
+         }
+ 
++        {
++                immunities.add( ToxicGas.class );
++                immunities.add( CorrosiveGas.class );
++                immunities.add( Burning.class );
++                immunities.add( ScrollOfRetribution.class );
++                immunities.add( ScrollOfPsionicBlast.class );
++        }
++
+         @Override
+         public int damageRoll() {
+                 return Random.NormalIntRange( 12, 18 );
+@@ -55,6 +72,25 @@
+         }
+ 
+         @Override
++        public int defenseSkill( Char enemy ) {
++                return INFINITE_EVASION;
++        }
++
++        @Override
++        public boolean interact(Char c) {
++                if (c != Dungeon.hero) {
++                        return true;
++                }
++                Game.runOnRenderThread(new Callback() {
++                        @Override
++                        public void call() {
++                                menu();
++                        }
++                });
++                return true;
++        }
++
++                @Override
+         protected boolean canAttack( Char enemy ) {
+                 return new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
+         }
+@@ -107,8 +143,8 @@
+                 next();
+         }
+ 
+-        public void call() {
+-                next();
++        public void menu() {
++                GameScene.show(new WndOrbsManage());
+         }
+ 
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java	(revision 885c8848d2baabd2da2dc4c2cad778ccd51ef1e6)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
+@@ -2,15 +2,19 @@
+ 
+ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
++import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+ import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
++import com.watabou.noosa.Game;
++import com.watabou.utils.Callback;
+ 
+ 
+ public class WndOrbsManage extends Window {
+@@ -32,16 +36,22 @@
+             protected void onClick() {
+             }
+         };
+-        RedButton btnorb2 = new RedButton( Messages.get(this, "orb2") ) {
++        RedButton move = new RedButton( Messages.get(this, "move") ) {
+             @Override
+             protected void onClick() {
++                Game.runOnRenderThread(new Callback() {
++                    @Override
++                    public void call() {
++
++                    }
++                });
+             }
+         };
+ 
+         btnorb1.setRect( 0, GAP - 2 , WIDTH, BTN_HEIGHT );
+-        btnorb2.setRect( 0, (int)btnorb1.bottom() + GAP, WIDTH, BTN_HEIGHT );
++        move.setRect( 0, (int)btnorb1.bottom() + GAP, WIDTH, BTN_HEIGHT );
+         add( btnorb1 );
+-        add( btnorb2 );
++        add( move );
+ 
+         resize( WIDTH, 42 );
+     }

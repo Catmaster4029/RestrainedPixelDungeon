@@ -1,0 +1,318 @@
+Index: SPD-classes/src/main/java/com/watabou/utils/PathFinder.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java b/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java
+--- a/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
++++ b/SPD-classes/src/main/java/com/watabou/utils/PathFinder.java	(revision a865e76a0e187d91ab6238a9280dcbe230cf0d5b)
+@@ -44,8 +44,6 @@
+ 	public static int[] NEIGHBOURS8;
+ 	public static int[] NEIGHBOURS9;
+ 	public static int[] NEIGHBOURS2;
+-	public static int[] LEFT;
+-	public static int[] RIGHT;
+ 
+ 	//similar to their equivalent neighbour arrays, but the order is clockwise.
+ 	//Useful for some logic functions, but is slower due to lack of array-access order.
+@@ -69,8 +67,6 @@
+ 
+ 		NEIGHBOURS4 = new int[]{-width, -1, +1, +width};
+ 		NEIGHBOURS2 = new int[]{ -1, +1};
+-		LEFT = new int[]{ -1};
+-		RIGHT = new int[]{+1 };
+ 		NEIGHBOURS8 = new int[]{-width-1, -width, -width+1, -1, +1, +width-1, +width, +width+1};
+ 		NEIGHBOURS9 = new int[]{-width-1, -width, -width+1, -1, 0, +1, +width-1, +width, +width+1};
+ 
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb.java	(revision a865e76a0e187d91ab6238a9280dcbe230cf0d5b)
+@@ -114,7 +114,7 @@
+ 
+ 
+         public static void spawnNext( int pos ) {
+-                for (int n : PathFinder.RIGHT) {
++                for (int n : PathFinder.NEIGHBOURS2) {
+                         spawnAtOrb(pos + n);
+                 }
+         }
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb2.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb2.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb2.java
+deleted file mode 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/LightOrb2.java	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
++++ /dev/null	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
+@@ -1,131 +0,0 @@
+-package com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs;
+-
+-import com.shatteredpixel.shatteredpixeldungeon.Badges;
+-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Light;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
+-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
+-import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
+-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
+-import com.shatteredpixel.shatteredpixeldungeon.sprites.LightOrbSprite;
+-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+-import com.watabou.noosa.tweeners.AlphaTweener;
+-import com.watabou.utils.PathFinder;
+-import com.watabou.utils.Random;
+-
+-public class LightOrb2 extends DirectableAlly {
+-
+-        private static final float TIME_TO_ZAP	= 1f;
+-
+-        {
+-                spriteClass = LightOrbSprite.class;
+-
+-                HP = HT = 1 ;
+-                defenseSkill = 1000;
+-                state = HUNTING;
+-                alignment = Alignment.ALLY;
+-                intelligentAlly = true;
+-        }
+-
+-        @Override
+-        public int damageRoll() {
+-                return Random.NormalIntRange( 12, 18 );
+-        }
+-
+-        @Override
+-        public int attackSkill( Char target ) {
+-                return 25;
+-        }
+-
+-        @Override
+-        public int drRoll() {
+-                return Random.NormalIntRange(0, 8);
+-        }
+-
+-        @Override
+-        protected boolean canAttack( Char enemy ) {
+-                return new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
+-        }
+-
+-        protected boolean doAttack( Char enemy ) {
+-
+-                if (Dungeon.level.adjacent( pos, enemy.pos )) {
+-
+-                        return super.doAttack( enemy );
+-
+-                } else {
+-
+-                        if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
+-                                sprite.zap( enemy.pos );
+-                                return false;
+-                        } else {
+-                                zap();
+-                                return true;
+-                        }
+-                }
+-        }
+-        protected void zap() {
+-                spend( 1f );
+-
+-                Invisibility.dispel(this);
+-                if (hit( this, enemy, true )) {
+-
+-                        enemy.damage( Random.NormalIntRange(10, 20), new YogFist.DarkFist.DarkBolt() );
+-
+-                        Light l = enemy.buff(Light.class);
+-                        if (l != null){
+-                                l.weaken(50);
+-                        }
+-
+-                        if (!enemy.isAlive() && enemy == Dungeon.hero) {
+-                                Badges.validateDeathFromEnemyMagic();
+-                                Dungeon.fail( getClass() );
+-                                GLog.n( Messages.get(Char.class, "kill", name()) );
+-                        }
+-
+-                } else {
+-
+-                        enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
+-                }
+-
+-        }
+-
+-        public void onZapComplete() {
+-                zap();
+-                next();
+-        }
+-
+-        public void call() {
+-                next();
+-        }
+-
+-
+-
+-        public static void spawnNext( int pos ) {
+-                for (int n : PathFinder.LEFT) {
+-                        spawnAtOrb(pos + n);
+-                }
+-        }
+-        public static LightOrb2 spawnAtOrb(int pos ) {
+-                if ((!Dungeon.level.solid[pos] || Dungeon.level.passable[pos]) && Actor.findChar( pos ) == null) {
+-
+-                        LightOrb2 w = new LightOrb2();
+-                        w.pos = pos;
+-                        Dungeon.level.occupyCell(w);
+-                        GameScene.add( w );
+-                        w.sprite.alpha( 0 );
+-                        w.sprite.parent.add( new AlphaTweener( w.sprite, 1, 0.5f ) );
+-
+-                        w.sprite.emitter().burst( ShadowParticle.CURSE, 5 );
+-                        return w;
+-                } else {
+-                        return null;
+-                }
+-        }
+-}
+-
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MagesStaff.java	(revision a865e76a0e187d91ab6238a9280dcbe230cf0d5b)
+@@ -71,7 +71,7 @@
+ 
+ 	public static final String AC_IMBUE = "IMBUE";
+ 	public static final String AC_ZAP	= "ZAP";
+-	public static final String AC_ORBS	= "ORBS";
++	public static final String AC_ORBS	= "MANAGE ORBS";
+ 
+ 
+ 	private static final float STAFF_SCALE_FACTOR = 0.75f;
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Messages.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Messages.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Messages.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Messages.java	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/messages/Messages.java	(revision a865e76a0e187d91ab6238a9280dcbe230cf0d5b)
+@@ -119,7 +119,7 @@
+ 			if (c != null && c.getSuperclass() != null){
+ 				return get(c.getSuperclass(), k, args);
+ 			} else {
+-				return  k;
++				return "This text is missing, ask for fix. Name: " + k;
+ 			}
+ 		}
+ 	}
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java
+deleted file mode 100644
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/sprites/LightOrbSprite2.java	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
++++ /dev/null	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
+@@ -1,72 +0,0 @@
+-package com.shatteredpixel.shatteredpixeldungeon.sprites;
+-
+-import com.shatteredpixel.shatteredpixeldungeon.Assets;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.LightOrb;
+-import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
+-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShaftParticle;
+-import com.watabou.glwrap.Blending;
+-import com.watabou.noosa.TextureFilm;
+-import com.watabou.noosa.audio.Sample;
+-import com.watabou.utils.Callback;
+-
+-public class LightOrbSprite2 extends MobSprite {
+-
+-    public LightOrbSprite2() {
+-        super();
+-
+-        texture( Assets.Sprites.LIGHT_ORB );
+-
+-        TextureFilm frames = new TextureFilm( texture, 14, 15 );
+-
+-        idle = new Animation( 5, true );
+-        idle.frames( frames, 0, 1 );
+-
+-        run = new Animation( 10, true );
+-        run.frames( frames, 0, 1 );
+-
+-        attack = new Animation( 10, false );
+-        attack.frames( frames, 0, 2, 3 );
+-
+-        die = new Animation( 8, false );
+-        die.frames( frames, 0, 4, 5, 6, 7 );
+-
+-        play( idle );
+-    }
+-
+-    @Override
+-    public void draw() {
+-        Blending.setLightMode();
+-        super.draw();
+-        Blending.setNormalMode();
+-    }
+-
+-    @Override
+-    public void die() {
+-        super.die();
+-        emitter().start( ShaftParticle.FACTORY, 0.3f, 4 );
+-        emitter().start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
+-    }
+-
+-    @Override
+-    public int blood() {
+-        return 0xFFFFFF;
+-    }
+-    public void zap( int cell ) {
+-
+-        super.zap( cell );
+-
+-        MagicMissile.boltFromChar( parent,
+-                MagicMissile.BEACON,
+-                this,
+-                cell,
+-                new Callback() {
+-                    @Override
+-                    public void call() {
+-                        ((LightOrb)ch).onZapComplete();
+-                    }
+-                } );
+-        Sample.INSTANCE.play( Assets.Sounds.ZAP );
+-    }
+-}
+-
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java	(revision 91ffc75d82834b417994b872e32d2d2c652fbac4)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChooseSubclass.java	(revision a865e76a0e187d91ab6238a9280dcbe230cf0d5b)
+@@ -31,7 +31,6 @@
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.LightOrb;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.LightOrb2;
+ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
+ import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
+ import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
+@@ -88,7 +87,6 @@
+ 								tome.choose( subCls );
+ 								if (Dungeon.hero.subClass == HeroSubClass.LIGHTBENDER){
+ 									LightOrb.spawnNext( hero.pos );
+-									LightOrb2.spawnNext(hero.pos );
+ 								}
+ 							}
+ 						}

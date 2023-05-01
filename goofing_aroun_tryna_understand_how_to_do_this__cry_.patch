@@ -1,0 +1,334 @@
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java	(revision c2a608c60a51c5c5e5bea10af55e830cd932c52d)
+@@ -111,11 +111,15 @@
+ import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
++import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
++import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+ import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
+ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
++import com.watabou.noosa.Game;
+ import com.watabou.noosa.audio.Sample;
+ import com.watabou.utils.Bundlable;
+ import com.watabou.utils.Bundle;
++import com.watabou.utils.Callback;
+ import com.watabou.utils.PathFinder;
+ import com.watabou.utils.Random;
+ 
+@@ -124,7 +128,7 @@
+ import java.util.LinkedHashSet;
+ 
+ public abstract class Char extends Actor {
+-	
++
+ 	public int pos = 0;
+ 	
+ 	public CharSprite sprite;
+@@ -201,6 +205,59 @@
+ 	//swaps places by default
+ 	public boolean interact(Char c){
+ 
++		//don't allow char to swap onto hazard unless they're flying
++		//you can swap onto a hazard though, as you're not the one instigating the swap
++		if (!Dungeon.level.passable[pos] && !c.flying){
++			return true;
++		}
++
++		//can't swap into a space without room
++		if (properties().contains(Property.LARGE) && !Dungeon.level.openSpace[c.pos]
++			|| c.properties().contains(Property.LARGE) && !Dungeon.level.openSpace[pos]){
++			return true;
++		}
++
++		int curPos = pos;
++
++		//warp instantly with allies in this case
++		if (c == Dungeon.hero && Dungeon.hero.hasTalent(Talent.ALLY_WARP)){
++			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
++			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
++				return true;
++			}
++			ScrollOfTeleportation.appear(this, c.pos);
++			ScrollOfTeleportation.appear(c, curPos);
++			Dungeon.observe();
++			GameScene.updateFog();
++			return true;
++		}
++
++		//can't swap places if one char has restricted movement
++		if (rooted || c.rooted || buff(Vertigo.class) != null || c.buff(Vertigo.class) != null){
++			return true;
++		}
++
++		moveSprite( pos, c.pos );
++		move( c.pos );
++		
++		c.sprite.move( c.pos, curPos );
++		c.move( curPos );
++		
++		c.spend( 1 / c.speed() );
++
++		if (c == Dungeon.hero){
++			if (Dungeon.hero.subClass == HeroSubClass.FREERUNNER){
++				Buff.affect(Dungeon.hero, Momentum.class).gainStack();
++			}
++
++			Dungeon.hero.busy();
++		}
++		
++		return true;
++	}
++
++	public boolean lightorbmove(Char c){
++
+ 		//don't allow char to swap onto hazard unless they're flying
+ 		//you can swap onto a hazard though, as you're not the one instigating the swap
+ 		if (!Dungeon.level.passable[pos] && !c.flying){
+@@ -209,7 +266,7 @@
+ 
+ 		//can't swap into a space without room
+ 		if (properties().contains(Property.LARGE) && !Dungeon.level.openSpace[c.pos]
+-			|| c.properties().contains(Property.LARGE) && !Dungeon.level.openSpace[pos]){
++				|| c.properties().contains(Property.LARGE) && !Dungeon.level.openSpace[pos]){
+ 			return true;
+ 		}
+ 
+@@ -235,10 +292,10 @@
+ 
+ 		moveSprite( pos, c.pos );
+ 		move( c.pos );
+-		
++
+ 		c.sprite.move( c.pos, curPos );
+ 		c.move( curPos );
+-		
++
+ 		c.spend( 1 / c.speed() );
+ 
+ 		if (c == Dungeon.hero){
+@@ -248,11 +305,12 @@
+ 
+ 			Dungeon.hero.busy();
+ 		}
+-		
++
+ 		return true;
+ 	}
+ 
+ 
++
+ 	protected boolean moveSprite( int from, int to ) {
+ 		
+ 		if (sprite.isVisible() && (Dungeon.level.heroFOV[from] || Dungeon.level.heroFOV[to])) {
+@@ -759,7 +817,7 @@
+ 	}
+ 
+ 	@Override
+-	protected void spend( float time ) {
++	public void spend(float time) {
+ 
+ 		float timeScale = 1f;
+ 		if (buff( Slow.class ) != null) {
+@@ -1024,4 +1082,9 @@
+ 	public static boolean hasProp( Char ch, Property p){
+ 		return (ch != null && ch.properties().contains(p));
+ 	}
++
++
+ }
++
++
++
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/Ratmogrify.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/Ratmogrify.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/Ratmogrify.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/Ratmogrify.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/Ratmogrify.java	(revision c2a608c60a51c5c5e5bea10af55e830cd932c52d)
+@@ -235,7 +235,7 @@
+ 		}
+ 
+ 		@Override
+-		protected void spend(float time) {
++        public void spend(float time) {
+ 			if (!allied) timeLeft -= time;
+ 			super.spend(time);
+ 		}
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/huntress/SpiritHawk.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/huntress/SpiritHawk.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/huntress/SpiritHawk.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/huntress/SpiritHawk.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/abilities/huntress/SpiritHawk.java	(revision c2a608c60a51c5c5e5bea10af55e830cd932c52d)
+@@ -226,7 +226,7 @@
+ 		}
+ 
+ 		@Override
+-		protected void spend(float time) {
++        public void spend(float time) {
+ 			super.spend(time);
+ 			timeRemaining -= time;
+ 		}
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Monk.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Monk.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Monk.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Monk.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Monk.java	(revision c2a608c60a51c5c5e5bea10af55e830cd932c52d)
+@@ -90,7 +90,7 @@
+ 	}
+ 	
+ 	@Override
+-	protected void spend( float time ) {
++    public void spend(float time) {
+ 		focusCooldown -= time;
+ 		super.spend( time );
+ 	}
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java
+new file mode 100644
+--- /dev/null	(revision c2a608c60a51c5c5e5bea10af55e830cd932c52d)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbOutfit.java	(revision c2a608c60a51c5c5e5bea10af55e830cd932c52d)
+@@ -0,0 +1,57 @@
++package com.shatteredpixel.shatteredpixeldungeon.windows;
++
++import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
++import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
++import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
++import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
++import com.watabou.noosa.Game;
++import com.watabou.utils.Callback;
++
++public class WndOrbOutfit extends Window {
++
++    private static final int WIDTH      = 120;
++    private static final int BTN_HEIGHT = 20;
++    private static final int GAP        = 2;
++
++    protected RedButton btnorb1;
++    protected RedButton btnorb2;
++
++    public int pos = 0;
++
++    public CharSprite sprite;
++
++    public WndOrbOutfit() {
++
++        super();
++
++
++        RedButton btnorb1 = new RedButton( Messages.get(this, "orb1") ) {
++            @Override
++            protected void onClick() {
++
++            }
++
++        };
++        RedButton move = new RedButton( Messages.get(this, "move") ) {
++            @Override
++            protected void onClick() {
++                Game.runOnRenderThread(new Callback() {
++                    @Override
++                    public void call() {
++
++
++                    }
++                });
++            }
++        };
++
++        btnorb1.setRect( 0, GAP - 2 , WIDTH, BTN_HEIGHT );
++        move.setRect( 0, (int)btnorb1.bottom() + GAP, WIDTH, BTN_HEIGHT );
++        add( btnorb1 );
++        add( move );
++
++        resize( WIDTH, 42 );
++    }
++
++}
++
+Index: core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+===================================================================
+diff --git a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java
+--- a/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java	(revision 573288034dee98cc6a20d08b13b030341e2c58ae)
++++ b/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndOrbsManage.java	(revision c2a608c60a51c5c5e5bea10af55e830cd932c52d)
+@@ -1,20 +1,18 @@
+ package com.shatteredpixel.shatteredpixeldungeon.windows;
+ 
+-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
+-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+-import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
++import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
++import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroAction;
+ import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+ import com.watabou.noosa.Game;
+ import com.watabou.utils.Callback;
++import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
++
++import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
++
++
+ 
+ 
+ public class WndOrbsManage extends Window {
+@@ -26,6 +24,10 @@
+     protected RedButton btnorb1;
+     protected RedButton btnorb2;
+ 
++    public int pos = 0;
++
++    public CharSprite sprite;
++
+     public WndOrbsManage() {
+ 
+         super();
+@@ -34,7 +36,9 @@
+         RedButton btnorb1 = new RedButton( Messages.get(this, "orb1") ) {
+             @Override
+             protected void onClick() {
++                GameScene.show(new WndOrbOutfit());
+             }
++
+         };
+         RedButton move = new RedButton( Messages.get(this, "move") ) {
+             @Override
+@@ -43,6 +47,7 @@
+                     @Override
+                     public void call() {
+ 
++
+                     }
+                 });
+             }
+@@ -56,4 +61,6 @@
+         resize( WIDTH, 42 );
+     }
+ 
+-}
+\ No newline at end of file
++}
++
++
