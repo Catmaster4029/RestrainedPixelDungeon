@@ -25,12 +25,12 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Barrier;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.ArcaneResin;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -59,6 +59,7 @@ import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
+
 import java.util.ArrayList;
 
 public class MagesStaff extends MeleeWeapon {
@@ -67,6 +68,8 @@ public class MagesStaff extends MeleeWeapon {
 
 	public static final String AC_IMBUE = "IMBUE";
 	public static final String AC_ZAP	= "ZAP";
+	public static final String AC_ORBS	= "ORBS";
+
 
 	private static final float STAFF_SCALE_FACTOR = 0.75f;
 
@@ -110,6 +113,9 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand!= null && wand.curCharges > 0) {
 			actions.add( AC_ZAP );
 		}
+		if (Dungeon.hero.subClass == HeroSubClass.LIGHTBENDER){
+			actions.add(AC_ORBS);
+		}
 		return actions;
 	}
 
@@ -130,7 +136,6 @@ public class MagesStaff extends MeleeWeapon {
 		super.execute(hero, action);
 
 		if (action.equals(AC_IMBUE)) {
-
 			curUser = hero;
 			GameScene.selectItem(itemSelector);
 
@@ -144,6 +149,8 @@ public class MagesStaff extends MeleeWeapon {
 			if (cursed || hasCurseEnchant()) wand.cursed = true;
 			else                             wand.cursed = false;
 			wand.execute(hero, AC_ZAP);
+		} else if (action.equals(AC_ORBS)) {
+
 		}
 	}
 

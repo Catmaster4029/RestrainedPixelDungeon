@@ -42,7 +42,6 @@ public class RunicBlade extends MeleeWeapon {
 		image = ItemSpriteSheet.RUNIC_BLADE;
 		hitSound = Assets.Sounds.HIT_SLASH;
 		hitSoundPitch = 1f;
-
 		tier = 4;
 	}
 

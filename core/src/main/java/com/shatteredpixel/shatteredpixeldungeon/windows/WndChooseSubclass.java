@@ -24,6 +24,8 @@ package com.shatteredpixel.shatteredpixeldungeon.windows;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.LightOrb2;
 import com.shatteredpixel.shatteredpixeldungeon.items.TengusMask;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -67,12 +69,17 @@ public class WndChooseSubclass extends Window {
 							Messages.get(WndChooseSubclass.this, "are_you_sure"),
 							Messages.get(WndChooseSubclass.this, "yes"),
 							Messages.get(WndChooseSubclass.this, "no")){
+
 						@Override
 						protected void onSelect(int index) {
 							hide();
 							if (index == 0 && WndChooseSubclass.this.parent != null){
 								WndChooseSubclass.this.hide();
 								tome.choose( subCls );
+								if (Dungeon.hero.subClass == HeroSubClass.LIGHTBENDER){
+									LightOrb.spawnNext( hero.pos );
+									LightOrb2.spawnNext( hero.pos );
+								}
 							}
 						}
 					});

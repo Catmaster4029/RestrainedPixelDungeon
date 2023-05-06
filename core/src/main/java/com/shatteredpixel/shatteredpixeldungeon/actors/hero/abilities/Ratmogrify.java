@@ -238,7 +238,7 @@ public class Ratmogrify extends ArmorAbility {
 		}
 
 		@Override
-		protected void spend(float time) {
+        public void spend(float time) {
 			if (!allied) timeLeft -= time;
 			super.spend(time);
 		}
